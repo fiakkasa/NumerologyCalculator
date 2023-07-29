@@ -1,0 +1,98 @@
+﻿@page "/"
+@page "/{*pageRoute}"
+
+<PageTitle>Numerology Calculator</PageTitle>
+
+<div class="input-group p-2">
+    <input type="text"
+           class="form-control"
+           placeholder="Enter your values.."
+           value="@input"
+           @ref="textInput"
+           @onchange="OnInputChange"
+           @oninput="OnInputChange" />
+    <div class="input-group-prepend">
+        <button type="button"
+                class="btn btn-outline-secondary"
+                disabled="@(input.Length == 0)"
+                @onclick="OnInputClear">
+            <span class="oi oi-x"></span>
+        </button>
+    </div>
+</div>
+
+@if (output is { Count: > 0 })
+{
+    <div class="p-2">
+        <ol>
+            @foreach (var item in output)
+            {
+                <li class="mb-2">@item</li>
+            }
+        </ol>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? PageRoute { get; set; }
+
+    private ElementReference textInput;
+    private string input = string.Empty;
+    private List<string>? output;
+    private const int charCode = 48;
+    private CancellationTokenSource? cts;
+
+    private string ComposeLine(List<int> collection, string sum) =>
+        string.Join(" + ", collection) + " = " + sum;
+
+    private async Task<IEnumerable<string>> ComposeCollection(string text, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await Task.Run(
+                () =>
+                {
+                    var result = new List<string>();
+                    var collection = text.Where(x => char.IsDigit(x)).Select(x => (int)x - charCode).ToList();
+
+                    if (collection is { Count: 0 }) return result;
+
+                    var sum = collection.Sum().ToString();
+
+                    result.Add(ComposeLine(collection, sum));
+
+                    while (sum is { Length: > 1 })
+                    {
+                        collection = sum.Select(x => (int)x - charCode).ToList();
+                        sum = collection.Sum().ToString();
+
+                        result.Add(ComposeLine(collection, sum));
+                    }
+
+                    return result;
+                },
+                cancellationToken
+            );
+        }
+        catch { return Enumerable.Empty<string>(); }
+    }
+
+    private async Task OnInputClear(MouseEventArgs mouseEventArgs)
+    {
+        input = string.Empty;
+        output?.Clear();
+        await textInput.FocusAsync();
+    }
+
+    private async Task OnInputChange(ChangeEventArgs changeEventArgs)
+    {
+        input = changeEventArgs.Value?.ToString() ?? string.Empty;
+
+        (output ??= new()).Clear();
+
+        cts?.Cancel();
+
+        output.AddRange(await ComposeCollection(input, (cts = new()).Token));
+    }
+}
