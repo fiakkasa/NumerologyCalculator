@@ -6,13 +6,12 @@
 <div class="p-3">
     <div class="input-group">
         <input type="text"
-            class="form-control"
-            placeholder="Enter your values.."
-            value="@_textInput"
-            maxlength="@_maxChars"
-            @ref="_textInputRef"
-            @onchange="OnInputChange"
-            @oninput="OnInputChange" />
+               class="form-control"
+               placeholder="Enter your values.."
+               @bind="_textInput"
+               @bind:event="oninput"
+               maxlength="@_maxChars"
+               @ref="_textInputRef" />
         <div class="input-group-prepend">
             <button type="button"
                     class="btn btn-outline-secondary"
@@ -28,31 +27,7 @@
         <span>@_maxChars</span>
     </i>
 
-    @if (_steps is { Count: > 0 })
-    {
-        <div class="d-flex align-items-center flex-column flex-sm-row mt-2">
-            <h1 class="flex-shrink-0 m-0 px-3 display-1">@_result</h1>
-            @if(_steps[0].numberOfDigits > 1)
-            {
-                <div class="card flex-fill m-0 ms-sm-3">
-                    <div class="card-body">
-                        <ol class="m-0 ps-3">
-                            @for(var i = 0; i < _steps.Count; i++)
-                            {
-                                <li class="@LiClass(i)">
-                                    <span class="text-secondary">@_steps[i].line</span>
-                                    <span class="text-success"> = </span>
-                                    <span class="text-secondary font-monospace">
-                                        @_steps[i].sum
-                                    </span>
-                                </li>
-                            }
-                        </ol> 
-                    </div>
-                </div>
-            }
-        </div>
-    }
+    <DigitAdder MaxChars="@_maxChars" TextInput="@_textInput" />
 </div>
 
 @code {
@@ -61,73 +36,11 @@
 
     private ElementReference _textInputRef;
     private string _textInput = string.Empty;
-    private const int _charCodeDelta = 48;
-    private CancellationTokenSource? _cts;
-    private const int _maxChars = 1_000;
-
-    private List<(string line, string sum, int numberOfDigits)>? _steps;
-    private string _result = string.Empty;
-
-    private static string LiClass(int i) => i > 0 ? "mt-2" : string.Empty;
-
-    private string ComposeLine(List<int> collection, string sum) =>
-        string.Join(" + ", collection);
-
-    private async Task<(string result, IEnumerable<(string line, string sum, int numberOfDigits)> steps)> Calculate(string text, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await Task.Run(
-                () =>
-                {
-                    var steps = new List<(string line, string sum, int numberOfDigits)>();
-                    var workingCollection = text.Where(x => char.IsDigit(x)).Select(x => (int)x - _charCodeDelta).ToList();
-
-                    if (workingCollection is { Count: 0 }) 
-                        return (result: string.Empty, steps);
-
-                    var result = workingCollection.Sum().ToString();
-
-                    steps.Add((line: ComposeLine(workingCollection, result), sum: result, numberOfDigits: workingCollection.Count));
-
-                    while (result is { Length: > 1 })
-                    {
-                        workingCollection = result.Select(x => (int)x - _charCodeDelta).ToList();
-                        result = workingCollection.Sum().ToString();
-
-                        steps.Add((line: ComposeLine(workingCollection, result), sum: result, numberOfDigits: workingCollection.Count));
-                    }
-
-                    return (result, steps);
-                },
-                cancellationToken
-            );
-        }
-        catch { return (result: string.Empty, steps: Enumerable.Empty<(string line, string sum, int numberOfDigits)>()); }
-    }
+    private int _maxChars = Consts.MaxInputChars;
 
     private async Task OnInputClear(MouseEventArgs mouseEventArgs)
     {
         _textInput = string.Empty;
-        _steps?.Clear();
         await _textInputRef.FocusAsync();
-    }
-
-    private async Task OnInputChange(ChangeEventArgs changeEventArgs)
-    {
-        var textInput = changeEventArgs.Value?.ToString() ?? string.Empty;
-
-        if(textInput.Length > _maxChars) return;
-
-        _textInput = textInput;
-
-        (_steps ??= new()).Clear();
-
-        _cts?.Cancel();
-
-        var (result, steps) = await Calculate(_textInput, (_cts = new()).Token);
-
-        _result = result;
-        _steps.AddRange(steps);
     }
 }

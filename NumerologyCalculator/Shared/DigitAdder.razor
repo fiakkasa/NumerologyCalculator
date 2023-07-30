@@ -1,0 +1,146 @@
+﻿@if (_steps is { Count: > 0 })
+{
+    <div class="digit-adder d-flex align-items-center flex-column flex-sm-row mt-2">
+        <h1 class="flex-shrink-0 m-0 px-3 display-1">@_result</h1>
+        @if (_steps[0].numberOfDigits > 1)
+        {
+            <div class="card flex-fill m-0 ms-sm-3">
+                <div class="card-body">
+                    <ol class="m-0 ps-3">
+                        @for (var i = 0; i < _steps.Count; i++)
+                        {
+                            <li class="@LiClass(i)">
+                                <span class="text-secondary">@_steps[i].line</span>
+                                <span class="text-success"> = </span>
+                                <span class="text-secondary font-monospace">
+                                    @_steps[i].sum
+                                </span>
+                            </li>
+                        }
+                    </ol>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private const int _charCodeDelta = 48;
+    private int _maxChars = 1_000;
+    private string _textInput = string.Empty;
+    private CancellationTokenSource? _cts;
+
+    private List<(string line, string sum, int numberOfDigits)>? _steps;
+    private string _result = string.Empty;
+
+    [Parameter]
+    public string? TextInput { get; set; }
+
+    [Parameter]
+    public int? MaxChars { get; set; }
+
+    private static string LiClass(int i) => i > 0 ? "mt-2" : string.Empty;
+
+    private string ComposeLine(List<int> collection, string sum) =>
+        string.Join(" + ", collection);
+
+    private async Task<(string result, IEnumerable<(string line, string sum, int numberOfDigits)> steps)> Calculate(string text, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await Task.Run(
+                () =>
+                {
+                    var steps = new List<(string line, string sum, int numberOfDigits)>();
+                    var workingCollection = text.Where(x => char.IsDigit(x)).Select(x => (int)x - _charCodeDelta).ToList();
+
+                    if (workingCollection is { Count: 0 })
+                        return (result: string.Empty, steps);
+
+                    var result = workingCollection.Sum().ToString();
+
+                    steps.Add(
+                        (
+                            line: ComposeLine(workingCollection, result),
+                            sum: result,
+                            numberOfDigits: workingCollection.Count
+                        )
+                    );
+
+                    while (result is { Length: > 1 })
+                    {
+                        workingCollection = result.Select(x => (int)x - _charCodeDelta).ToList();
+                        result = workingCollection.Sum().ToString();
+
+                        steps.Add(
+                            (
+                                line: ComposeLine(workingCollection, result),
+                                sum: result,
+                                numberOfDigits: workingCollection.Count
+                            )
+                        );
+                    }
+
+                    return (result, steps);
+                },
+                cancellationToken
+            );
+        }
+        catch
+        {
+            return (
+                result: string.Empty,
+                steps: Enumerable.Empty<(string line, string sum, int numberOfDigits)>()
+            );
+        }
+    }
+
+    private void SetMaxChars(int? value)
+    {
+        if (value == _maxChars) return;
+
+        if (value is { } v and > 0 and < 10_000)
+        {
+            _maxChars = v;
+            return;
+        }
+
+        _maxChars = 1_000;
+    }
+
+    private void SetTextInput(string? value)
+    {
+        if (value == _textInput) return;
+
+        if (value is { Length: > 0 } v)
+        {
+            _textInput = (v.Length > _maxChars) switch
+            {
+                true => v.Substring(0, _maxChars),
+                _ => v
+            };
+            return;
+        }
+
+        _textInput = string.Empty;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_textInput == TextInput && _maxChars == MaxChars) return;
+
+        SetMaxChars(MaxChars);
+        SetTextInput(TextInput);
+
+        _result = string.Empty;
+        (_steps ??= new()).Clear();
+        _cts?.Cancel();
+
+        if (_textInput.Length == 0) return;
+
+        var (result, steps) = await Calculate(_textInput, (_cts = new()).Token);
+
+        _result = result;
+        _steps.AddRange(steps);
+    }
+}

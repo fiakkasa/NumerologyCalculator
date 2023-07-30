@@ -5,6 +5,11 @@ VisualStudioVersion = 25.0.1706.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumerologyCalculator", "NumerologyCalculator\NumerologyCalculator.csproj", "{E6521DF3-CBFB-438E-B57C-7594C10399FC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5B5B7AC7-75A7-4F2D-AD53-27D0EB3E31F7}"
+	ProjectSection(SolutionItems) = preProject
+		Consts.config = Consts.config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
