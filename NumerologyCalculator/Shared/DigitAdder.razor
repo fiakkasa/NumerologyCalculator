@@ -27,6 +27,7 @@
 @code {
     private const int _charCodeDelta = 48;
     private int _maxChars = 1_000;
+    private int _delay = 600;
     private string _textInput = string.Empty;
     private CancellationTokenSource _cts = new();
 
@@ -38,6 +39,9 @@
 
     [Parameter]
     public int? MaxChars { get; set; }
+
+    [Parameter]
+    public int? Delay { get; set; }
 
     private static string LiClass(int i) => i > 0 ? "mt-2" : string.Empty;
 
@@ -120,12 +124,29 @@
         _textInput = string.Empty;
     }
 
-    protected override void OnParametersSet()
+    private void SetDelay(int? value)
     {
-        if (_textInput == TextInput && _maxChars == MaxChars) return;
+        if (value == _delay) return;
+
+        if (value is { } v and >= 100 and <= 1_000)
+        {
+            _delay = v;
+            return;
+        }
+
+        _delay = 600;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_textInput == TextInput && _maxChars == MaxChars && _delay == Delay) return;
 
         SetMaxChars(MaxChars);
         SetTextInput(TextInput);
+        SetDelay(Delay);
+
+        _cts.Cancel();
+        _cts = new();
 
         if (_textInput.Length == 0)
         {
@@ -137,12 +158,21 @@
             return;
         }
 
-        var (result, steps) = Calculate(_textInput);
+        try
+        {
+            await Task.Delay(_delay, _cts.Token);
 
-        _result = result;
-        _steps.Clear();
-        _steps.AddRange(steps);
+            await Task.Run(() =>
+            {
+                var (result, steps) = Calculate(_textInput);
 
-        StateHasChanged();
+                _result = result;
+                _steps.Clear();
+                _steps.AddRange(steps);
+
+                StateHasChanged();
+            }, _cts.Token);
+        }
+        catch { }
     }
 }
