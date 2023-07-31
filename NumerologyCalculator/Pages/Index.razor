@@ -2,6 +2,7 @@
 @page "/{*text}"
 
 @inject NavigationManager navigationManager
+@inject NumerologyUiConfig numerologyUiConfig
 
 <PageTitle>Numerology Calculator</PageTitle>
 
@@ -10,7 +11,7 @@
         <input type="text"
                class="form-control"
                placeholder="Enter your values.."
-               maxlength="@_maxChars"
+               maxlength="@numerologyUiConfig.MaxInputChars"
                @bind:event="oninput"
                @bind:get="_textInput"
                @bind:set="OnInput"
@@ -32,13 +33,12 @@
         <span class="flex-fill"></span>
         <span class="flex-shrink-0">@_textInput.Length</span>
         <span class="flex-shrink-0">/</span>
-        <span class="flex-shrink-0">@_maxChars</span>
+        <span class="flex-shrink-0">@numerologyUiConfig.MaxInputChars</span>
     </i>
 
-    <DigitAdder MaxChars="@_maxChars"
-                TextInput="@_textInput"
-                Delay="Consts.UiInputDelay"
-                LoadingChanged="v => _digitAdderLoading = v" />
+    <DigitAdder TextInput="@_textInput" LoadingChanged="v => _digitAdderLoading = v" />
+
+    <LetterAdder TextInput="@_textInput" LoadingChanged="v => _letterAdderLoading = v" />
 </div>
 
 @code {
@@ -47,10 +47,10 @@
 
     private ElementReference _textInputRef;
     private string _textInput = string.Empty;
-    private int _maxChars = Consts.MaxInputChars;
     private bool _digitAdderLoading;
+    private bool _letterAdderLoading;
 
-    public bool Loading => _digitAdderLoading;
+    public bool Loading => _digitAdderLoading || _letterAdderLoading;
 
     private async Task OnInputClear(MouseEventArgs mouseEventArgs)
     {
