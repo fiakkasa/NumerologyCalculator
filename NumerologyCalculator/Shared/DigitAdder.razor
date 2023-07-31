@@ -1,18 +1,24 @@
-﻿@if (_steps is { Count: > 0 })
+﻿@if (_result is { Length: > 0 })
 {
     <div class="digit-adder d-flex align-items-center flex-column flex-sm-row mt-2">
-        @if (_result is { Length: > 0 and <= 3 })
+        @if (IsNumerologyLinkEligible(_result, out var result))
         {
-            <a href="@GetNumerologyUrl(_result)"
+            <a href="@GetNumerologyUrl(result)"
                target="_blank"
-               class="btn flex-shrink-0 m-0 p-0 px-3 text-secondary">
-                <span class="display-1 px-3">
-                    @_result
+               class="btn flex-shrink-0 m-0 p-0 border-0">
+                <span class="px-3 text-secondary display-1 ">
+                    @result
                 </span>
             </a>
         }
+        else
+        {
+            <div class="flex-shrink-0 m-0 p-0 border-0 px-3 text-secondary display-1">
+                @result
+            </div>
+        }
 
-        @if (_steps[0].numberOfDigits > 1)
+        @if (_steps is { Count: > 1 })
         {
             <div class="card flex-fill m-0 mt-4 mt-sm-0 ms-sm-3">
                 <div class="card-body">
@@ -21,26 +27,26 @@
                         {
                             <li class="@GetLiClass(i)">
                                 <div class="d-flex align-items-center">
-                                    @if (_steps[i].sequence is { Length: > 0 and <= 3 } sequence)
+                                    @if (IsNumerologyLinkEligible(_steps[i].sequence, out var sequence))
                                     {
                                         <a href="@GetNumerologyUrl(sequence)"
                                            target="_blank"
-                                           class="btn p-1 text-secondary">
+                                           class="btn p-1 border-0 text-secondary">
                                             @_steps[i].equation
                                         </a>
                                     }
                                     else
                                     {
-                                        <div class="p-1 text-secondary">@_steps[i].equation</div>
+                                        <div class="p-1 border-0 text-secondary">@_steps[i].equation</div>
                                     }
 
                                     <div class="text-success">=</div>
 
-                                    @if (_steps[i].sum is { Length: > 0 and <= 3 } sum)
+                                    @if (IsNumerologyLinkEligible(_steps[i].sum, out var sum))
                                     {
                                         <a href="@GetNumerologyUrl(sum)"
                                            target="_blank"
-                                           class="btn p-1 text-secondary">
+                                           class="btn p-1 border-0 text-secondary">
                                             <span class="text-secondary font-monospace">
                                                 @sum
                                             </span>
@@ -48,8 +54,8 @@
                                     }
                                     else
                                     {
-                                        <div class="p-1 text-secondary font-monospace">
-                                            @_steps[i].sum
+                                        <div class="p-1 border-0 text-secondary font-monospace">
+                                            @sum
                                         </div>
                                     }
                                 </div>
@@ -81,8 +87,15 @@
     [Parameter]
     public int? Delay { get; set; }
 
-    private static string GetNumerologyUrl(string result) =>
-        $"https://number.academy/numerology/{result}";
+    private static bool IsNumerologyLinkEligible(string? value, out string result)
+    {
+        result = value is { } v ? v : string.Empty;
+
+        return value is { Length: > 0 and <= 3 };
+    }
+
+    private static string GetNumerologyUrl(string value) =>
+        $"https://number.academy/numerology/{value}";
 
     private static string GetLiClass(int i) => i > 0 ? "mt-2" : string.Empty;
 
