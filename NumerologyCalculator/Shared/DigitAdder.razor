@@ -96,17 +96,7 @@
     {
         if (value == _textInput) return;
 
-        if (value is { Length: > 0 } v)
-        {
-            _textInput = (v.Length > numerologyUiConfig.MaxInputChars) switch
-            {
-                true => v.Substring(0, numerologyUiConfig.MaxInputChars),
-                _ => v
-            };
-            return;
-        }
-
-        _textInput = string.Empty;
+        _textInput = numerologyUiService.NormalizeTextInput(value);
     }
 
     private async Task SetLoading(bool value) => await LoadingChanged.InvokeAsync(value);
@@ -136,20 +126,17 @@
 
         try
         {
-            await Task.Delay(numerologyUiConfig.MaxInputChars, _cts.Token);
+            await Task.Delay(numerologyUiConfig.UiInputDelay, _cts.Token);
 
-            await Task.Run(async () =>
-            {
-                var (result, steps) = numerologyDigitCalculatorService.Calculate(_textInput);
+            var (result, steps) = await numerologyDigitCalculatorService.Calculate(_textInput, _cts.Token);
 
-                _result = result;
-                _steps.Clear();
-                _steps.AddRange(steps);
+            _result = result;
+            _steps.Clear();
+            _steps.AddRange(steps);
 
-                await SetLoading(false);
+            await SetLoading(false);
 
-                StateHasChanged();
-            }, _cts.Token);
+            StateHasChanged();
         }
         catch { }
     }

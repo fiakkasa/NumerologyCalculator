@@ -20,4 +20,18 @@ public class NumerologyUiService
 
     public string ComposeCalculatorEntrySequence<T>(IEnumerable<T> collection) =>
         string.Join(string.Empty, collection);
+
+    public string NormalizeTextInput(string? value)
+    {
+        if (value is { Length: > 0 } v)
+        {
+            return (v.Length > _config.MaxInputChars) switch
+            {
+                true => v[.._config.MaxInputChars],
+                _ => v
+            };
+        }
+
+        return string.Empty;
+    }
 }
