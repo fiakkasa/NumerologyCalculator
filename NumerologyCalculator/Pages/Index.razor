@@ -1,5 +1,7 @@
 ﻿@page "/"
-@page "/{*pageRoute}"
+@page "/{*text}"
+
+@inject NavigationManager navigationManager
 
 <PageTitle>Numerology Calculator</PageTitle>
 
@@ -8,8 +10,8 @@
         <input type="text"
                class="form-control"
                placeholder="Enter your values.."
-               @bind="_textInput"
-               @bind:event="oninput"
+               value="@_textInput"
+               @oninput="OnInput"
                maxlength="@_maxChars"
                @ref="_textInputRef" />
         <div class="input-group-prepend">
@@ -32,7 +34,7 @@
 
 @code {
     [Parameter]
-    public string? PageRoute { get; set; }
+    public string? Text { get; set; }
 
     private ElementReference _textInputRef;
     private string _textInput = string.Empty;
@@ -42,5 +44,30 @@
     {
         _textInput = string.Empty;
         await _textInputRef.FocusAsync();
+
+        navigationManager.NavigateTo("/", false, true);
+    }
+
+    private void OnInput(ChangeEventArgs changeEventArgs)
+    {
+        _textInput = changeEventArgs.Value?.ToString() ?? string.Empty;
+
+        navigationManager.NavigateTo($"/{_textInput}", false, true);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _textInputRef.FocusAsync();
+
+            if (Text is { })
+            {
+                _textInput = Text;
+                StateHasChanged();
+            }
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 }

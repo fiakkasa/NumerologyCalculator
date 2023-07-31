@@ -28,9 +28,9 @@
     private const int _charCodeDelta = 48;
     private int _maxChars = 1_000;
     private string _textInput = string.Empty;
-    private CancellationTokenSource? _cts;
+    private CancellationTokenSource _cts = new();
 
-    private List<(string line, string sum, int numberOfDigits)>? _steps;
+    private List<(string line, string sum, int numberOfDigits)> _steps = new();
     private string _result = string.Empty;
 
     [Parameter]
@@ -44,47 +44,42 @@
     private string ComposeLine(List<int> collection, string sum) =>
         string.Join(" + ", collection);
 
-    private async Task<(string result, IEnumerable<(string line, string sum, int numberOfDigits)> steps)> Calculate(string text, CancellationToken cancellationToken)
+    private (string result, IEnumerable<(string line, string sum, int numberOfDigits)> steps) Calculate(string text)
     {
         try
         {
-            return await Task.Run(
-                () =>
-                {
-                    var steps = new List<(string line, string sum, int numberOfDigits)>();
-                    var workingCollection = text.Where(x => char.IsDigit(x)).Select(x => (int)x - _charCodeDelta).ToList();
+            var steps = new List<(string line, string sum, int numberOfDigits)>();
+            var workingCollection = text.Where(x => char.IsDigit(x)).Select(x => (int)x - _charCodeDelta).ToList();
 
-                    if (workingCollection is { Count: 0 })
-                        return (result: string.Empty, steps);
+            if (workingCollection is { Count: 0 })
+                return (result: string.Empty, steps);
 
-                    var result = workingCollection.Sum().ToString();
+            var result = workingCollection.Sum().ToString();
 
-                    steps.Add(
-                        (
-                            line: ComposeLine(workingCollection, result),
-                            sum: result,
-                            numberOfDigits: workingCollection.Count
-                        )
-                    );
-
-                    while (result is { Length: > 1 })
-                    {
-                        workingCollection = result.Select(x => (int)x - _charCodeDelta).ToList();
-                        result = workingCollection.Sum().ToString();
-
-                        steps.Add(
-                            (
-                                line: ComposeLine(workingCollection, result),
-                                sum: result,
-                                numberOfDigits: workingCollection.Count
-                            )
-                        );
-                    }
-
-                    return (result, steps);
-                },
-                cancellationToken
+            steps.Add(
+                (
+                    line: ComposeLine(workingCollection, result),
+                    sum: result,
+                    numberOfDigits: workingCollection.Count
+                )
             );
+
+            while (result is { Length: > 1 })
+            {
+                workingCollection = result.Select(x => (int)x - _charCodeDelta).ToList();
+                result = workingCollection.Sum().ToString();
+
+                steps.Add(
+                    (
+                        line: ComposeLine(workingCollection, result),
+                        sum: result,
+                        numberOfDigits: workingCollection.Count
+                    )
+                );
+            }
+
+            return (result, steps);
+
         }
         catch
         {
@@ -125,22 +120,29 @@
         _textInput = string.Empty;
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         if (_textInput == TextInput && _maxChars == MaxChars) return;
 
         SetMaxChars(MaxChars);
         SetTextInput(TextInput);
 
-        _result = string.Empty;
-        (_steps ??= new()).Clear();
-        _cts?.Cancel();
+        if (_textInput.Length == 0)
+        {
+            _result = string.Empty;
+            _steps.Clear();
 
-        if (_textInput.Length == 0) return;
+            StateHasChanged();
 
-        var (result, steps) = await Calculate(_textInput, (_cts = new()).Token);
+            return;
+        }
+
+        var (result, steps) = Calculate(_textInput);
 
         _result = result;
+        _steps.Clear();
         _steps.AddRange(steps);
+
+        StateHasChanged();
     }
 }
