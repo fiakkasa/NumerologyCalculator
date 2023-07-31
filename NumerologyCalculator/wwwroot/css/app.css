@@ -4,6 +4,26 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.loading:before {
+    animation: dots 1s infinite;
+    content: '.';
+    color: var(--bs-gray-500);
+}
+
+@keyframes dots {
+    0% {
+        content: '.';
+    }
+
+    33% {
+        content: '..';
+    }
+
+    67% {
+        content: '...';
+    }
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

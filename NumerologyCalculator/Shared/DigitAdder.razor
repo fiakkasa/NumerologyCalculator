@@ -87,6 +87,9 @@
     [Parameter]
     public int? Delay { get; set; }
 
+    [Parameter]
+    public EventCallback<bool> LoadingChanged { get; set; }
+
     private static bool IsNumerologyLinkEligible(string? value, out string result)
     {
         result = value is { } v ? v : string.Empty;
@@ -196,9 +199,13 @@
         _delay = 600;
     }
 
+    private async Task SetLoading(bool value) => await LoadingChanged.InvokeAsync(value);
+
     protected override async Task OnParametersSetAsync()
     {
         if (_textInput == TextInput && _maxChars == MaxChars && _delay == Delay) return;
+
+        await SetLoading(true);
 
         SetMaxChars(MaxChars);
         SetTextInput(TextInput);
@@ -212,6 +219,8 @@
             _result = string.Empty;
             _steps.Clear();
 
+            await SetLoading(false);
+
             StateHasChanged();
 
             return;
@@ -221,13 +230,15 @@
         {
             await Task.Delay(_delay, _cts.Token);
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 var (result, steps) = Calculate(_textInput);
 
                 _result = result;
                 _steps.Clear();
                 _steps.AddRange(steps);
+
+                await SetLoading(false);
 
                 StateHasChanged();
             }, _cts.Token);

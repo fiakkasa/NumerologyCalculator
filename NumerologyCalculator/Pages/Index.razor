@@ -24,13 +24,21 @@
             </button>
         </div>
     </div>
-    <i class="d-flex justify-content-end small text-muted mt-1">
-        <span>@_textInput.Length</span>
-        <span>/</span>
-        <span>@_maxChars</span>
+    <i class="d-flex small text-muted mt-1">
+        @if (Loading)
+        {
+            <span class="loading flex-shrink-0"></span>
+        }
+        <span class="flex-fill"></span>
+        <span class="flex-shrink-0">@_textInput.Length</span>
+        <span class="flex-shrink-0">/</span>
+        <span class="flex-shrink-0">@_maxChars</span>
     </i>
 
-    <DigitAdder MaxChars="@_maxChars" TextInput="@_textInput" Delay="Consts.UiInputDelay" />
+    <DigitAdder MaxChars="@_maxChars"
+                TextInput="@_textInput"
+                Delay="Consts.UiInputDelay"
+                LoadingChanged="v => _digitAdderLoading = v" />
 </div>
 
 @code {
@@ -40,6 +48,9 @@
     private ElementReference _textInputRef;
     private string _textInput = string.Empty;
     private int _maxChars = Consts.MaxInputChars;
+    private bool _digitAdderLoading;
+
+    public bool Loading => _digitAdderLoading;
 
     private async Task OnInputClear(MouseEventArgs mouseEventArgs)
     {
