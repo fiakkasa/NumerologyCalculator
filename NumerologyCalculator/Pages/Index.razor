@@ -10,9 +10,10 @@
         <input type="text"
                class="form-control"
                placeholder="Enter your values.."
-               value="@_textInput"
-               @oninput="OnInput"
                maxlength="@_maxChars"
+               @bind:event="oninput"
+               @bind:get="_textInput"
+               @bind:set="OnInput"
                @ref="_textInputRef" />
         <div class="input-group-prepend">
             <button type="button"
@@ -48,11 +49,11 @@
         navigationManager.NavigateTo("./", false, true);
     }
 
-    private void OnInput(ChangeEventArgs changeEventArgs)
+    private void OnInput(string value)
     {
-        _textInput = changeEventArgs.Value?.ToString() ?? string.Empty;
+        _textInput = value;
 
-        navigationManager.NavigateTo($"./{_textInput}", false, true);
+        navigationManager.NavigateTo($"./{value}", false, true);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
