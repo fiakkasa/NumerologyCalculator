@@ -45,14 +45,14 @@
         _textInput = string.Empty;
         await _textInputRef.FocusAsync();
 
-        navigationManager.NavigateTo("/", false, true);
+        navigationManager.NavigateTo("./", false, true);
     }
 
     private void OnInput(ChangeEventArgs changeEventArgs)
     {
         _textInput = changeEventArgs.Value?.ToString() ?? string.Empty;
 
-        navigationManager.NavigateTo($"/{_textInput}", false, true);
+        navigationManager.NavigateTo($"./{_textInput}", false, true);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
