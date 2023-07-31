@@ -16,13 +16,26 @@
         {
             <div class="card flex-fill m-0 mt-4 mt-sm-0 ms-sm-3">
                 <div class="card-body">
-                    <ol class="m-0 ps-3">
+                    <ol class="m-0 ps-3 text-black-50">
                         @for (var i = 0; i < _steps.Count; i++)
                         {
                             <li class="@GetLiClass(i)">
                                 <div class="d-flex align-items-center">
-                                    <div class="text-secondary">@_steps[i].line</div>
-                                    <div class="text-success ms-1"> = </div>
+                                    @if (_steps[i].sequence is { Length: > 0 and <= 3 } sequence)
+                                    {
+                                        <a href="@GetNumerologyUrl(sequence)"
+                                           target="_blank"
+                                           class="btn p-1 text-secondary">
+                                            @_steps[i].equation
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <div class="p-1 text-secondary">@_steps[i].equation</div>
+                                    }
+
+                                    <div class="text-success">=</div>
+
                                     @if (_steps[i].sum is { Length: > 0 and <= 3 } sum)
                                     {
                                         <a href="@GetNumerologyUrl(sum)"
@@ -56,7 +69,7 @@
     private string _textInput = string.Empty;
     private CancellationTokenSource _cts = new();
 
-    private List<(string line, string sum, int numberOfDigits)> _steps = new();
+    private List<(string equation, string sum, int numberOfDigits, string sequence)> _steps = new();
     private string _result = string.Empty;
 
     [Parameter]
@@ -73,14 +86,17 @@
 
     private static string GetLiClass(int i) => i > 0 ? "mt-2" : string.Empty;
 
-    private string ComposeLine(List<int> collection, string sum) =>
+    private string ComposeEquation(List<int> collection) =>
         string.Join(" + ", collection);
 
-    private (string result, IEnumerable<(string line, string sum, int numberOfDigits)> steps) Calculate(string text)
+    private string ComposeSequence(List<int> collection) =>
+        string.Join(string.Empty, collection);
+
+    private (string result, IEnumerable<(string equation, string sum, int numberOfDigits, string sequence)> steps) Calculate(string text)
     {
         try
         {
-            var steps = new List<(string line, string sum, int numberOfDigits)>();
+            var steps = new List<(string equation, string sum, int numberOfDigits, string sequence)>();
             var workingCollection = text.Where(x => char.IsDigit(x)).Select(x => (int)x - _charCodeDelta).ToList();
 
             if (workingCollection is { Count: 0 })
@@ -90,9 +106,10 @@
 
             steps.Add(
                 (
-                    line: ComposeLine(workingCollection, result),
+                    equation: ComposeEquation(workingCollection),
                     sum: result,
-                    numberOfDigits: workingCollection.Count
+                    numberOfDigits: workingCollection.Count,
+                    sequence: ComposeSequence(workingCollection)
                 )
             );
 
@@ -103,9 +120,10 @@
 
                 steps.Add(
                     (
-                        line: ComposeLine(workingCollection, result),
+                        equation: ComposeEquation(workingCollection),
                         sum: result,
-                        numberOfDigits: workingCollection.Count
+                        numberOfDigits: workingCollection.Count,
+                        sequence: ComposeSequence(workingCollection)
                     )
                 );
             }
@@ -117,7 +135,7 @@
         {
             return (
                 result: string.Empty,
-                steps: Enumerable.Empty<(string line, string sum, int numberOfDigits)>()
+                steps: Enumerable.Empty<(string equation, string sum, int numberOfDigits, string sequence)>()
             );
         }
     }
