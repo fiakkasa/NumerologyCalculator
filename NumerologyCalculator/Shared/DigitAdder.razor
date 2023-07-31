@@ -1,15 +1,25 @@
 ﻿@if (_steps is { Count: > 0 })
 {
     <div class="digit-adder d-flex align-items-center flex-column flex-sm-row mt-2">
-        <h1 class="flex-shrink-0 m-0 px-3 display-1">@_result</h1>
+        @if (_result is { Length: > 0 and <= 3 })
+        {
+            <a href="@GetNumerologyUrl(_result)"
+               target="_blank"
+               class="btn flex-shrink-0 m-0 p-0 px-3 text-secondary">
+                <span class="display-1 px-3">
+                    @_result
+                </span>
+            </a>
+        }
+
         @if (_steps[0].numberOfDigits > 1)
         {
-            <div class="card flex-fill m-0 ms-sm-3">
+            <div class="card flex-fill m-0 mt-4 mt-sm-0 ms-sm-3">
                 <div class="card-body">
                     <ol class="m-0 ps-3">
                         @for (var i = 0; i < _steps.Count; i++)
                         {
-                            <li class="@LiClass(i)">
+                            <li class="@GetLiClass(i)">
                                 <span class="text-secondary">@_steps[i].line</span>
                                 <span class="text-success"> = </span>
                                 <span class="text-secondary font-monospace">
@@ -43,7 +53,10 @@
     [Parameter]
     public int? Delay { get; set; }
 
-    private static string LiClass(int i) => i > 0 ? "mt-2" : string.Empty;
+    private static string GetNumerologyUrl(string result) =>
+        $"https://number.academy/numerology/{result}";
+
+    private static string GetLiClass(int i) => i > 0 ? "mt-2" : string.Empty;
 
     private string ComposeLine(List<int> collection, string sum) =>
         string.Join(" + ", collection);
