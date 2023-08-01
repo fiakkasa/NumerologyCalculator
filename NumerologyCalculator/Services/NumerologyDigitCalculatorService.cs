@@ -1,4 +1,6 @@
-﻿namespace NumerologyCalculator.Services;
+﻿using NumerologyCalculator.Models;
+
+namespace NumerologyCalculator.Services;
 
 public class NumerologyDigitCalculatorService
 {
@@ -8,28 +10,28 @@ public class NumerologyDigitCalculatorService
     public NumerologyDigitCalculatorService(NumerologyUiService numerologyUiService) =>
         _numerologyUiService = numerologyUiService;
 
-    public async Task<(string result, IEnumerable<(string equation, string sum, int numberOfDigits, string sequence)> steps)> Calculate(string text, CancellationToken cancellationToken = default) =>
-        await Task.Run(() =>
+    public async Task<CalculationResult> Calculate(string text, CancellationToken cancellationToken = default) =>
+        await Task.Run<CalculationResult>(() =>
             {
                 try
                 {
-                    var steps = new List<(string equation, string sum, int numberOfDigits, string sequence)>();
+                    var steps = new List<CalculationStep>();
                     var workingCollection =
                         text.Where(x => char.IsDigit(x))
                             .Select(x => (int)x - _charCodeDelta)
                             .ToList();
 
                     if (workingCollection is { Count: 0 })
-                        return (result: string.Empty, steps);
+                        return new(Result: string.Empty, Steps: steps);
 
                     var result = workingCollection.Sum().ToString();
 
                     steps.Add(
-                        (
-                            equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection),
-                            sum: result,
-                            numberOfDigits: workingCollection.Count,
-                            sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection)
+                        new(
+                            Equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection),
+                            Sum: result,
+                            NumberOfCharacters: workingCollection.Count,
+                            Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection)
                         )
                     );
 
@@ -39,23 +41,20 @@ public class NumerologyDigitCalculatorService
                         result = workingCollection.Sum().ToString();
 
                         steps.Add(
-                            (
-                                equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection),
-                                sum: result,
-                                numberOfDigits: workingCollection.Count,
-                                sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection)
+                            new(
+                                Equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection),
+                                Sum: result,
+                                NumberOfCharacters: workingCollection.Count,
+                                Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection)
                             )
                         );
                     }
 
-                    return (result, steps);
+                    return new(Result: result, Steps: steps);
                 }
                 catch
                 {
-                    return (
-                        result: string.Empty,
-                        steps: Enumerable.Empty<(string equation, string sum, int numberOfDigits, string sequence)>()
-                    );
+                    return new(Result: string.Empty, Steps: Enumerable.Empty<CalculationStep>());
                 }
             },
             cancellationToken

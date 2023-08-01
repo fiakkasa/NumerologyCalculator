@@ -12,7 +12,8 @@ builder.Services
         MaxInputChars = 1_000,
         UiInputDelay = 600,
         CalculatorEquationSeparator = " + ",
-        LiCalculatorEntryClass = "mt-2"
+        CalculatorEquationCombinedItemTemplate = "({0}: {1})",
+        CalculatorStepEntryContainerClass = "mt-2"
     })
     .AddSingleton<NumerologyUiService>()
     .AddSingleton(new NumerologyLinksConfig

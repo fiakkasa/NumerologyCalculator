@@ -11,7 +11,7 @@ public class NumerologyUiService
 
     public string GetLiCalculatorEntryClass(int i) => i switch
     {
-        > 0 => _config.LiCalculatorEntryClass,
+        > 0 => _config.CalculatorStepEntryContainerClass,
         _ => string.Empty
     };
 
@@ -20,6 +20,9 @@ public class NumerologyUiService
 
     public string ComposeCalculatorEntrySequence<T>(IEnumerable<T> collection) =>
         string.Join(string.Empty, collection);
+
+    public string ComposeCalculatorEquationCombinedItem<TLeft, TRight>(TLeft left, TRight right) =>
+        string.Format(_config.CalculatorEquationCombinedItemTemplate, left, right);
 
     public string NormalizeTextInput(string? value)
     {

@@ -1,4 +1,6 @@
-﻿namespace NumerologyCalculator.Services;
+﻿using NumerologyCalculator.Models;
+
+namespace NumerologyCalculator.Services;
 
 public class NumerologyLetterCalculatorService
 {
@@ -45,29 +47,29 @@ public class NumerologyLetterCalculatorService
     public NumerologyLetterCalculatorService(NumerologyUiService numerologyUiService) =>
         _numerologyUiService = numerologyUiService;
 
-    public async Task<(string result, IEnumerable<(string equation, string sum, int numberOfLetters, string sequence)> steps)> Calculate(string text, CancellationToken cancellationToken) =>
-        await Task.Run(() =>
+    public async Task<CalculationResult> Calculate(string text, CancellationToken cancellationToken) =>
+        await Task.Run<CalculationResult>(() =>
             {
                 try
                 {
-                    var steps = new List<(string equation, string sum, int numberOfLetters, string sequence)>();
+                    var steps = new List<CalculationStep>();
                     var workingCollection =
                         text.ToUpper()
                             .Where(x => char.IsAsciiLetter(x) && _map.ContainsKey(x))
-                            .Select(letter => (letter, number: _map[letter], composed: $"({letter}: {_map[letter]})"))
+                            .Select(letter => (letter, number: _map[letter], composed: _numerologyUiService.ComposeCalculatorEquationCombinedItem(letter, _map[letter])))
                             .ToList();
 
                     if (workingCollection is { Count: 0 })
-                        return (result: string.Empty, steps);
+                        return new(Result: string.Empty, Steps: steps);
 
                     var result = workingCollection.Select(x => x.number).Sum().ToString();
 
                     steps.Add(
-                        (
-                            equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection.Select(x => x.composed)),
-                            sum: result,
-                            numberOfLetters: workingCollection.Count,
-                            sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection.Select(x => x.number))
+                        new(
+                            Equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection.Select(x => x.composed)),
+                            Sum: result,
+                            NumberOfCharacters: workingCollection.Count,
+                            Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection.Select(x => x.number))
                         )
                     );
 
@@ -79,23 +81,20 @@ public class NumerologyLetterCalculatorService
                         result = numberCollection.Sum().ToString();
 
                         steps.Add(
-                            (
-                                equation: _numerologyUiService.ComposeCalculatorEntryEquation(numberCollection),
-                                sum: result,
-                                numberOfLetters: workingCollection.Count,
-                                sequence: _numerologyUiService.ComposeCalculatorEntrySequence(numberCollection)
+                            new(
+                                Equation: _numerologyUiService.ComposeCalculatorEntryEquation(numberCollection),
+                                Sum: result,
+                                NumberOfCharacters: workingCollection.Count,
+                                Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(numberCollection)
                             )
                         );
                     }
 
-                    return (result, steps);
+                    return new(Result: result, Steps: steps);
                 }
                 catch
                 {
-                    return (
-                        result: string.Empty,
-                        steps: Enumerable.Empty<(string equation, string sum, int numberOfLetters, string sequence)>()
-                    );
+                    return new(Result: string.Empty, Steps: Enumerable.Empty<CalculationStep>());
                 }
             },
             cancellationToken

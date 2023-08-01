@@ -6,8 +6,8 @@
 
 <PageTitle>Numerology Calculator</PageTitle>
 
-<div class="p-3">
-    <div class="input-group">
+<div class="sticky-md-top z-3 px-3 pt-4 pb-0 bg-white">
+    <div class="input-group sticky-md-top">
         <input type="text"
                class="form-control"
                placeholder="Enter your values.."
@@ -35,7 +35,9 @@
         <span class="flex-shrink-0">/</span>
         <span class="flex-shrink-0">@numerologyUiConfig.MaxInputChars</span>
     </i>
+</div>
 
+<div class="px-3 pt-0 pb-4">
     <DigitAdder TextInput="@_textInput" LoadingChanged="v => _digitAdderLoading = v" />
 
     <LetterAdder TextInput="@_textInput" LoadingChanged="v => _letterAdderLoading = v" />

@@ -8,5 +8,7 @@ public record NumerologyUiConfig
 
     public string CalculatorEquationSeparator { get; set; } = " + ";
 
-    public string LiCalculatorEntryClass { get; set; } = "mt-2";
+    public string CalculatorEquationCombinedItemTemplate { get; set; } = "({0}: {1})";
+
+    public string CalculatorStepEntryContainerClass { get; set; } = "mt-2";
 }
