@@ -77,7 +77,7 @@ public class NumerologyLetterCalculatorService
 
                     while (result is { Length: > 1 })
                     {
-                        numberCollection = result.Select(x => (int)x - _charCodeDelta).ToList();
+                        numberCollection = result.Select(x => x - _charCodeDelta).ToList();
                         result = numberCollection.Sum().ToString();
 
                         steps.Add(

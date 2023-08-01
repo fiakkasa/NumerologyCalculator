@@ -24,17 +24,10 @@ public class NumerologyUiService
     public string ComposeCalculatorEquationCombinedItem<TLeft, TRight>(TLeft left, TRight right) =>
         string.Format(_config.CalculatorEquationCombinedItemTemplate, left, right);
 
-    public string NormalizeTextInput(string? value)
+    public string NormalizeTextInput(string? value) => value switch
     {
-        if (value is { Length: > 0 } v)
-        {
-            return (v.Length > _config.MaxInputChars) switch
-            {
-                true => v[.._config.MaxInputChars],
-                _ => v
-            };
-        }
-
-        return string.Empty;
-    }
+        { Length: > 0 } v when v.Length > _config.MaxInputChars => v[.._config.MaxInputChars],
+        { Length: > 0 } v => v,
+        _ => string.Empty
+    };
 }

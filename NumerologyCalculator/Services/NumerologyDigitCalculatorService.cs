@@ -18,7 +18,7 @@ public class NumerologyDigitCalculatorService
                     var steps = new List<CalculationStep>();
                     var workingCollection =
                         text.Where(x => char.IsDigit(x))
-                            .Select(x => (int)x - _charCodeDelta)
+                            .Select(x => x - _charCodeDelta)
                             .ToList();
 
                     if (workingCollection is { Count: 0 })
@@ -37,7 +37,7 @@ public class NumerologyDigitCalculatorService
 
                     while (result is { Length: > 1 })
                     {
-                        workingCollection = result.Select(x => (int)x - _charCodeDelta).ToList();
+                        workingCollection = result.Select(x => x - _charCodeDelta).ToList();
                         result = workingCollection.Sum().ToString();
 
                         steps.Add(
