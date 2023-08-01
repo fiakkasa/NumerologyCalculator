@@ -9,12 +9,8 @@ public class NumerologyLinksService
     public NumerologyLinksService(NumerologyLinksConfig config) =>
         _config = config;
 
-    public bool IsNumerologyLinkEligible(string? value, out string result)
-    {
-        result = value is { } v ? v : string.Empty;
-
-        return value is { Length: > 0 and <= 3 };
-    }
+    public bool IsNumerologyLinkEligible(string? value, out string result) =>
+        (result = value is { } v ? v : string.Empty) is { Length: > 0 and <= 3 };
 
     public string GetNumerologyUrl(string value) =>
         string.Format(_config.Url, value);

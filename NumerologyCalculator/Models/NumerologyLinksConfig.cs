@@ -1,6 +1,3 @@
 ﻿namespace NumerologyCalculator.Models;
 
-public record NumerologyLinksConfig
-{
-    public string Url { get; set; } = "/{0}";
-}
+public record NumerologyLinksConfig(string Url = "/{0}");

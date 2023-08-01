@@ -18,6 +18,9 @@ public class NumerologyUiService
     public string ComposeCalculatorEquationCombinedItem<TLeft, TRight>(TLeft left, TRight right) =>
         string.Format(_config.CalculatorEquationCombinedItemTemplate, left, right);
 
+    public async Task InputDelay(CancellationToken cancellationToken = default) =>
+        await Task.Delay(_config.UiInputDelay, cancellationToken);
+
     public string NormalizeTextInput(string? value) => value switch
     {
         { Length: > 0 } v when v.Length > _config.MaxInputChars => v[.._config.MaxInputChars],

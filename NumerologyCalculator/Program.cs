@@ -7,18 +7,14 @@ using NumerologyCalculator.Services;
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.Services
-    .AddSingleton(new NumerologyUiConfig
-    {
-        MaxInputChars = 1_000,
-        UiInputDelay = 600,
-        CalculatorEquationSeparator = " + ",
-        CalculatorEquationCombinedItemTemplate = "({0}: {1})"
-    })
+    .AddSingleton(new NumerologyUiConfig(
+        MaxInputChars: 1_000,
+        UiInputDelay: 600,
+        CalculatorEquationSeparator: " + ",
+        CalculatorEquationCombinedItemTemplate: "({0}: {1})"
+    ))
     .AddSingleton<NumerologyUiService>()
-    .AddSingleton(new NumerologyLinksConfig
-    {
-        Url = "https://number.academy/numerology/{0}"
-    })
+    .AddSingleton(new NumerologyLinksConfig(Url: "https://number.academy/numerology/{0}"))
     .AddSingleton<NumerologyLinksService>()
     .AddSingleton<NumerologyDigitCalculatorService>()
     .AddSingleton<NumerologyLetterCalculatorService>();

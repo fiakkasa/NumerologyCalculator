@@ -1,12 +1,8 @@
 ﻿namespace NumerologyCalculator.Models;
 
-public record NumerologyUiConfig
-{
-    public int MaxInputChars { get; set; } = 1_000;
-
-    public int UiInputDelay { get; set; } = 1_000;
-
-    public string CalculatorEquationSeparator { get; set; } = " + ";
-
-    public string CalculatorEquationCombinedItemTemplate { get; set; } = "({0}: {1})";
-}
+public record NumerologyUiConfig(
+    int MaxInputChars = 1_000,
+    int UiInputDelay = 1_000,
+    string CalculatorEquationSeparator = " + ",
+    string CalculatorEquationCombinedItemTemplate = "({0}: {1})"
+);

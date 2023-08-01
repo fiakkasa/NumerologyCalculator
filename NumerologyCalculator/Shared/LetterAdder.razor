@@ -1,6 +1,5 @@
 ﻿@inject NumerologyLinksService numerologyLinksService
 @inject NumerologyUiService numerologyUiService
-@inject NumerologyUiConfig numerologyUiConfig
 @inject NumerologyLetterCalculatorService numerologyLetterCalculatorService
 
 @if (_result is { Length: > 0 })
@@ -124,7 +123,7 @@
 
         try
         {
-            await Task.Delay(numerologyUiConfig.UiInputDelay, _cts.Token);
+            await numerologyUiService.InputDelay(_cts.Token);
 
             var (result, steps) = await numerologyLetterCalculatorService.Calculate(_textInput, _cts.Token);
 
