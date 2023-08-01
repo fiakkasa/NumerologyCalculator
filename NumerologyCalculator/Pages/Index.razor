@@ -12,15 +12,14 @@
                  FocusOnLoad="true" />
 </div>
 
-<div class="px-3 pt-0 pb-2">
-    <div class="pb-3">
-        <DigitAdder Text="@Text"
-                    BusyChanged="v => _digitAdderBusy = v" />
-    </div>
-    <div class="pb-3">
-        <LetterAdder Text="@Text"
-                     BusyChanged="v => _letterAdderBusy = v" />
-    </div>
+<div class="px-3 pb-4 hide-when-empty">
+    <DigitAdder Text="@Text"
+                BusyChanged="v => _digitAdderBusy = v" />
+</div>
+
+<div class="px-3 pb-4 hide-when-empty">
+    <LetterAdder Text="@Text"
+                 BusyChanged="v => _letterAdderBusy = v" />
 </div>
 
 @code {

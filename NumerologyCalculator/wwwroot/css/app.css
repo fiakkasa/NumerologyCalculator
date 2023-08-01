@@ -10,6 +10,10 @@ html, body {
     color: var(--bs-gray-500);
 }
 
+.hide-when-empty:empty {
+    display: none;
+}
+
 @keyframes dots {
     0% {
         content: '.';
