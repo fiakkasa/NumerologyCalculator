@@ -1,0 +1,54 @@
+﻿@inject NumerologyLinksService numerologyLinksService
+
+@if (Steps is { Count: > 0 } steps)
+{
+    <div class="card flex-fill m-0 mt-4 mt-sm-0 ms-sm-3">
+        <div class="card-body">
+            @for (var i = 0; i < steps.Count; i++)
+            {
+                <div class="d-flex align-items-center py-1">
+                    <div class="p-1">@(i+1).</div>
+
+                    @if (numerologyLinksService.IsNumerologyLinkEligible(steps[i].Sequence, out var sequence))
+                    {
+                        <a href="@numerologyLinksService.GetNumerologyUrl(sequence)"
+                           target="_blank"
+                           class="btn p-1 border-0 text-secondary text-break">
+                            @steps[i].Equation
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="p-1 border-0 text-secondary text-break">
+                            @steps[i].Equation
+                        </div>
+                    }
+
+                    <div class="text-success">=</div>
+
+                    @if (numerologyLinksService.IsNumerologyLinkEligible(steps[i].Sum, out var sum))
+                    {
+                        <a href="@numerologyLinksService.GetNumerologyUrl(sum)"
+                           target="_blank"
+                           class="btn p-1 border-0 text-secondary">
+                            <span class="text-secondary font-monospace">
+                                @sum
+                            </span>
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="p-1 border-0 text-secondary font-monospace">
+                            @sum
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<CalculationStep>? Steps { get; set; }
+}
