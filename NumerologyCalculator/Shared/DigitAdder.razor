@@ -27,7 +27,7 @@
                 </div>
             }
 
-            @if (_steps.FirstOrDefault()?.NumberOfCharacters > 0)
+            @if (_steps.FirstOrDefault()?.NumberOfCharacters > 1)
             {
                 <div class="card flex-fill m-0 mt-4 mt-sm-0 ms-sm-3">
                     <div class="card-body">
@@ -77,44 +77,36 @@
 }
 
 @code {
-    private string _textInput = string.Empty;
     private CancellationTokenSource _cts = new();
+    private string? _text;
 
     private List<CalculationStep> _steps = new();
     private string _result = string.Empty;
 
     [Parameter]
-    public string? TextInput { get; set; }
+    public string? Text { get; set; }
 
     [Parameter]
-    public EventCallback<bool> LoadingChanged { get; set; }
-
-    private void SetTextInput(string? value)
-    {
-        if (value == _textInput) return;
-
-        _textInput = numerologyUiService.NormalizeTextInput(value);
-    }
-
-    private async Task SetLoading(bool value) => await LoadingChanged.InvokeAsync(value);
+    public EventCallback<bool> BusyChanged { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
-        if (_textInput == TextInput) return;
+        if (_text == Text) return;
 
-        await SetLoading(true);
+        await BusyChanged.InvokeAsync(true);
 
-        SetTextInput(TextInput);
+        _text = Text;
+        var text = numerologyUiService.NormalizeTextInput(Text);
 
         _cts.Cancel();
         _cts = new();
 
-        if (_textInput.Length == 0)
+        if (text.Length == 0)
         {
             _result = string.Empty;
             _steps.Clear();
 
-            await SetLoading(false);
+            await BusyChanged.InvokeAsync(false);
 
             StateHasChanged();
 
@@ -125,13 +117,13 @@
         {
             await numerologyUiService.InputDelay(_cts.Token);
 
-            var (result, steps) = await numerologyDigitCalculatorService.Calculate(_textInput, _cts.Token);
+            var (result, steps) = await numerologyDigitCalculatorService.Calculate(text, _cts.Token);
 
             _result = result;
             _steps.Clear();
             _steps.AddRange(steps);
 
-            await SetLoading(false);
+            await BusyChanged.InvokeAsync(false);
 
             StateHasChanged();
         }

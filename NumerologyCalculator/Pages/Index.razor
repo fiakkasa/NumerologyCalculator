@@ -13,13 +13,13 @@
                placeholder="Enter your values.."
                maxlength="@numerologyUiConfig.MaxInputChars"
                @bind:event="oninput"
-               @bind:get="_textInput"
+               @bind:get="Text"
                @bind:set="OnInput"
-               @ref="_textInputRef" />
+               @ref="_textRef" />
         <div class="input-group-prepend">
             <button type="button"
                     class="btn btn-outline-secondary"
-                    disabled="@(_textInput.Length == 0)"
+                    disabled="@(Text is not { Length: > 0})"
                     @onclick="OnInputClear">
                 <span class="oi oi-x"></span>
             </button>
@@ -31,7 +31,7 @@
             <span class="loading flex-shrink-0"></span>
         }
         <span class="flex-fill"></span>
-        <span class="flex-shrink-0">@_textInput.Length</span>
+        <span class="flex-shrink-0">@(Text?.Length ?? 0)</span>
         <span class="flex-shrink-0">/</span>
         <span class="flex-shrink-0">@numerologyUiConfig.MaxInputChars</span>
     </i>
@@ -39,10 +39,10 @@
 
 <div class="px-3 pt-0 pb-2">
     <div class="pb-3">
-        <DigitAdder TextInput="@_textInput" LoadingChanged="v => _digitAdderLoading = v" />
+        <DigitAdder Text="@Text" BusyChanged="v => _digitAdderBusy = v" />
     </div>
     <div class="pb-3">
-        <LetterAdder TextInput="@_textInput" LoadingChanged="v => _letterAdderLoading = v" />
+        <LetterAdder Text="@Text" BusyChanged="v => _letterAdderBusy = v" />
     </div>
 </div>
 
@@ -50,24 +50,23 @@
     [Parameter]
     public string? Text { get; set; }
 
-    private ElementReference _textInputRef;
-    private string _textInput = string.Empty;
-    private bool _digitAdderLoading;
-    private bool _letterAdderLoading;
+    private ElementReference _textRef;
+    private bool _digitAdderBusy;
+    private bool _letterAdderBusy;
 
-    public bool Loading => _digitAdderLoading || _letterAdderLoading;
+    public bool Loading => _digitAdderBusy || _letterAdderBusy;
 
     private async Task OnInputClear(MouseEventArgs mouseEventArgs)
     {
-        _textInput = string.Empty;
-        await _textInputRef.FocusAsync();
+        Text = string.Empty;
+        await _textRef.FocusAsync();
 
         navigationManager.NavigateTo("./", false, true);
     }
 
     private void OnInput(string value)
     {
-        _textInput = value;
+        Text = value;
 
         navigationManager.NavigateTo($"./{value}", false, true);
     }
@@ -75,15 +74,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-        {
-            await _textInputRef.FocusAsync();
-
-            if (Text is { })
-            {
-                _textInput = Text;
-                StateHasChanged();
-            }
-        }
+            await _textRef.FocusAsync();
 
         await base.OnAfterRenderAsync(firstRender);
     }

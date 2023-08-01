@@ -77,44 +77,36 @@
 }
 
 @code {
-    private string _textInput = string.Empty;
+    private string? _text;
     private CancellationTokenSource _cts = new();
 
     private List<CalculationStep> _steps = new();
     private string _result = string.Empty;
 
     [Parameter]
-    public string? TextInput { get; set; }
+    public string? Text { get; set; }
 
     [Parameter]
-    public EventCallback<bool> LoadingChanged { get; set; }
-
-    private void SetTextInput(string? value)
-    {
-        if (value == _textInput) return;
-
-        _textInput = numerologyUiService.NormalizeTextInput(value);
-    }
-
-    private async Task SetLoading(bool value) => await LoadingChanged.InvokeAsync(value);
+    public EventCallback<bool> BusyChanged { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
-        if (_textInput == TextInput) return;
+        if (_text == Text) return;
 
-        await SetLoading(true);
+        await BusyChanged.InvokeAsync(true);
 
-        SetTextInput(TextInput);
+        _text = Text;
+        var text = numerologyUiService.NormalizeTextInput(Text);
 
         _cts.Cancel();
         _cts = new();
 
-        if (_textInput.Length == 0)
+        if (text.Length == 0)
         {
             _result = string.Empty;
             _steps.Clear();
 
-            await SetLoading(false);
+            await BusyChanged.InvokeAsync(false);
 
             StateHasChanged();
 
@@ -125,13 +117,13 @@
         {
             await numerologyUiService.InputDelay(_cts.Token);
 
-            var (result, steps) = await numerologyLetterCalculatorService.Calculate(_textInput, _cts.Token);
+            var (result, steps) = await numerologyLetterCalculatorService.Calculate(text, _cts.Token);
 
             _result = result;
             _steps.Clear();
             _steps.AddRange(steps);
 
-            await SetLoading(false);
+            await BusyChanged.InvokeAsync(false);
 
             StateHasChanged();
         }
