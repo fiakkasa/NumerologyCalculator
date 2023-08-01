@@ -9,12 +9,6 @@ public class NumerologyUiService
     public NumerologyUiService(NumerologyUiConfig config) =>
         _config = config;
 
-    public string GetLiCalculatorEntryClass(int i) => i switch
-    {
-        > 0 => _config.CalculatorStepEntryContainerClass,
-        _ => string.Empty
-    };
-
     public string ComposeCalculatorEntryEquation<T>(IEnumerable<T> collection) =>
         string.Join(_config.CalculatorEquationSeparator, collection);
 

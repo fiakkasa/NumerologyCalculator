@@ -32,46 +32,44 @@
             {
                 <div class="card flex-fill m-0 mt-4 mt-sm-0 ms-sm-3">
                     <div class="card-body">
-                        <ol class="m-0 ps-3 text-black-50">
-                            @for (var i = 0; i < _steps.Count; i++)
-                            {
-                                <li class="@numerologyUiService.GetLiCalculatorEntryClass(i)">
-                                    <div class="d-flex align-items-center">
-                                        @if (numerologyLinksService.IsNumerologyLinkEligible(_steps[i].Sequence, out var sequence))
-                                        {
-                                            <a href="@numerologyLinksService.GetNumerologyUrl(sequence)"
-                                               target="_blank"
-                                               class="btn p-1 border-0 text-secondary text-break">
-                                                @_steps[i].Equation
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <div class="p-1 border-0 text-secondary text-break">@_steps[i].Equation</div>
-                                        }
+                        @for (var i = 0; i < _steps.Count; i++)
+                        {
+                            <div class="d-flex align-items-center">
+                                <div class="p-1">@(i+1).</div>
 
-                                        <div class="text-success">=</div>
+                                @if (numerologyLinksService.IsNumerologyLinkEligible(_steps[i].Sequence, out var sequence))
+                                {
+                                    <a href="@numerologyLinksService.GetNumerologyUrl(sequence)"
+                                       target="_blank"
+                                       class="btn p-1 border-0 text-secondary text-break">
+                                        @_steps[i].Equation
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="p-1 border-0 text-secondary text-break">@_steps[i].Equation</div>
+                                }
 
-                                        @if (numerologyLinksService.IsNumerologyLinkEligible(_steps[i].Sum, out var sum))
-                                        {
-                                            <a href="@numerologyLinksService.GetNumerologyUrl(sum)"
-                                               target="_blank"
-                                               class="btn p-1 border-0 text-secondary">
-                                                <span class="text-secondary font-monospace">
-                                                    @sum
-                                                </span>
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <div class="p-1 border-0 text-secondary font-monospace">
-                                                @sum
-                                            </div>
-                                        }
+                                <div class="text-success">=</div>
+
+                                @if (numerologyLinksService.IsNumerologyLinkEligible(_steps[i].Sum, out var sum))
+                                {
+                                    <a href="@numerologyLinksService.GetNumerologyUrl(sum)"
+                                       target="_blank"
+                                       class="btn p-1 border-0 text-secondary">
+                                        <span class="text-secondary font-monospace">
+                                            @sum
+                                        </span>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="p-1 border-0 text-secondary font-monospace">
+                                        @sum
                                     </div>
-                                </li>
-                            }
-                        </ol>
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
             }

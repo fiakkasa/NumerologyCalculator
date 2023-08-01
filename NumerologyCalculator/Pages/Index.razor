@@ -37,10 +37,13 @@
     </i>
 </div>
 
-<div class="px-3 pt-0 pb-4">
-    <DigitAdder TextInput="@_textInput" LoadingChanged="v => _digitAdderLoading = v" />
-
-    <LetterAdder TextInput="@_textInput" LoadingChanged="v => _letterAdderLoading = v" />
+<div class="px-3 pt-0 pb-2">
+    <div class="pb-3">
+        <DigitAdder TextInput="@_textInput" LoadingChanged="v => _digitAdderLoading = v" />
+    </div>
+    <div class="pb-3">
+        <LetterAdder TextInput="@_textInput" LoadingChanged="v => _letterAdderLoading = v" />
+    </div>
 </div>
 
 @code {

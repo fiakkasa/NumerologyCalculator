@@ -24,10 +24,6 @@ html, body {
     }
 }
 
-.calculator ~ .calculator {
-    margin-top: 1.5em;
-}
-
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
