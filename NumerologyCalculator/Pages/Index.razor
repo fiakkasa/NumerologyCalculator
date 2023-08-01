@@ -2,80 +2,39 @@
 @page "/{*text}"
 
 @inject NavigationManager navigationManager
-@inject NumerologyUiConfig numerologyUiConfig
 
 <PageTitle>Numerology Calculator</PageTitle>
 
 <div class="sticky-md-top z-3 px-3 pt-4 pb-0 bg-white">
-    <div class="input-group">
-        <input type="text"
-               class="form-control"
-               placeholder="Enter your values.."
-               maxlength="@numerologyUiConfig.MaxInputChars"
-               @bind:event="oninput"
-               @bind:get="Text"
-               @bind:set="OnInput"
-               @ref="_textRef" />
-        <div class="input-group-prepend">
-            <button type="button"
-                    class="btn btn-outline-secondary"
-                    disabled="@(Text is not { Length: > 0})"
-                    @onclick="OnInputClear">
-                <span class="oi oi-x"></span>
-            </button>
-        </div>
-    </div>
-    <i class="d-flex small text-muted mt-1">
-        @if (Loading)
-        {
-            <span class="loading flex-shrink-0"></span>
-        }
-        <span class="flex-fill"></span>
-        <span class="flex-shrink-0">@(Text?.Length ?? 0)</span>
-        <span class="flex-shrink-0">/</span>
-        <span class="flex-shrink-0">@numerologyUiConfig.MaxInputChars</span>
-    </i>
+    <SearchInput @bind-Text:get="Text"
+                 @bind-Text:set="OnTextChange"
+                 Loading="Loading"
+                 FocusOnLoad="true" />
 </div>
 
 <div class="px-3 pt-0 pb-2">
     <div class="pb-3">
-        <DigitAdder Text="@Text" BusyChanged="v => _digitAdderBusy = v" />
+        <DigitAdder Text="@Text"
+                    BusyChanged="v => _digitAdderBusy = v" />
     </div>
     <div class="pb-3">
-        <LetterAdder Text="@Text" BusyChanged="v => _letterAdderBusy = v" />
+        <LetterAdder Text="@Text"
+                     BusyChanged="v => _letterAdderBusy = v" />
     </div>
 </div>
 
 @code {
-    [Parameter]
-    public string? Text { get; set; }
-
-    private ElementReference _textRef;
     private bool _digitAdderBusy;
     private bool _letterAdderBusy;
 
+    [Parameter]
+    public string? Text { get; set; }
+
     public bool Loading => _digitAdderBusy || _letterAdderBusy;
 
-    private async Task OnInputClear(MouseEventArgs mouseEventArgs)
-    {
-        Text = string.Empty;
-        await _textRef.FocusAsync();
-
-        navigationManager.NavigateTo("./", false, true);
-    }
-
-    private void OnInput(string value)
+    private void OnTextChange(string value)
     {
         Text = value;
-
         navigationManager.NavigateTo($"./{value}", false, true);
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-            await _textRef.FocusAsync();
-
-        await base.OnAfterRenderAsync(firstRender);
     }
 }
