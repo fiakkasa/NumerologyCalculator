@@ -14,7 +14,7 @@
 
 <div class="px-3 pb-4 hide-when-empty">
     <DigitAdder Text="@Text"
-                Title="Numerical Calculation"
+                Title="Numeric Calculation"
                 BusyChanged="v => _digitAdderBusy = v"
                 ResultChanged="v => _digitAdderResult = v" />
 </div>
@@ -26,14 +26,11 @@
                  ResultChanged="v => _letterAdderResult = v" />
 </div>
 
-@if ((_digitAdderResult + _letterAdderResult) is { Length: > 1 } combinedResult)
-{
-    <div class="px-3 pb-4">
-        <DigitAdder Text="@combinedResult"
-                    Title="Combined Numerical and Letter Calculation"
-                    BusyChanged="v => _combinedAdderBusy = v" />
-    </div>
-}
+<div class="px-3 pb-4 hide-when-empty">
+    <DigitAdder Text="@CombinedResult"
+                Title="Combined Numeric and Letter Calculation"
+                BusyChanged="v => _combinedAdderBusy = v" />
+</div>
 
 @code {
     private bool _digitAdderBusy;
@@ -47,5 +44,15 @@
 
     private bool Loading => _digitAdderBusy || _letterAdderBusy || _combinedAdderBusy;
 
-    private void OnTextChange(string value) => navigationManager.NavigateTo($"./{value}", false, true);
+    private string CombinedResult => (_digitAdderResult is { Length: > 0 } && _letterAdderResult is { Length: > 0 }) switch
+    {
+        true => _digitAdderResult + _letterAdderResult,
+        _ => string.Empty
+    };
+
+    private void OnTextChange(string value)
+    {
+        Text = value;
+        navigationManager.NavigateTo($"./{value}");
+    }
 }
