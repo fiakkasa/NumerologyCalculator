@@ -1,4 +1,8 @@
-﻿.loader {
+﻿#app:after {
+    display: none;
+}
+
+.loader {
     animation: rotate 1s infinite;
     height: 50px;
     width: 50px;
