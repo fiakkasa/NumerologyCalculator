@@ -4,9 +4,7 @@
 @if (_result is { Length: > 0 })
 {
     <div class="letter-adder calculator">
-        <div class="lead">
-            Letter Calculation
-        </div>
+        <AdderTitle Text="@Title" />
 
         <div class="d-flex align-items-center flex-column flex-sm-row mt-2">
             <CalculationResult Text="@_result" />
@@ -27,10 +25,16 @@
     private string _result = string.Empty;
 
     [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
     public string? Text { get; set; }
 
     [Parameter]
     public EventCallback<bool> BusyChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ResultChanged { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -50,6 +54,7 @@
             _steps.Clear();
 
             await BusyChanged.InvokeAsync(false);
+            await ResultChanged.InvokeAsync(_result);
 
             StateHasChanged();
 
@@ -67,6 +72,7 @@
             _steps.AddRange(steps);
 
             await BusyChanged.InvokeAsync(false);
+            await ResultChanged.InvokeAsync(_result);
 
             StateHasChanged();
         }

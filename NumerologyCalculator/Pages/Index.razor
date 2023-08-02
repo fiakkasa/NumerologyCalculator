@@ -14,22 +14,38 @@
 
 <div class="px-3 pb-4 hide-when-empty">
     <DigitAdder Text="@Text"
-                BusyChanged="v => _digitAdderBusy = v" />
+                Title="Numerical Calculation"
+                BusyChanged="v => _digitAdderBusy = v"
+                ResultChanged="v => _digitAdderResult = v" />
 </div>
 
 <div class="px-3 pb-4 hide-when-empty">
     <LetterAdder Text="@Text"
-                 BusyChanged="v => _letterAdderBusy = v" />
+                 Title="Letter Calculation"
+                 BusyChanged="v => _letterAdderBusy = v"
+                 ResultChanged="v => _letterAdderResult = v" />
 </div>
+
+@if ((_digitAdderResult + _letterAdderResult) is { Length: > 1 } combinedResult)
+{
+    <div class="px-3 pb-4">
+        <DigitAdder Text="@combinedResult"
+                    Title="Combined Numerical and Letter Calculation"
+                    BusyChanged="v => _combinedAdderBusy = v" />
+    </div>
+}
 
 @code {
     private bool _digitAdderBusy;
+    private string _digitAdderResult = string.Empty;
     private bool _letterAdderBusy;
+    private string _letterAdderResult = string.Empty;
+    private bool _combinedAdderBusy;
 
     [Parameter]
     public string? Text { get; set; }
 
-    public bool Loading => _digitAdderBusy || _letterAdderBusy;
+    private bool Loading => _digitAdderBusy || _letterAdderBusy || _combinedAdderBusy;
 
     private void OnTextChange(string value)
     {
