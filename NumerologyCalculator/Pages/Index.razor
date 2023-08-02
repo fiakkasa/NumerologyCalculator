@@ -47,9 +47,5 @@
 
     private bool Loading => _digitAdderBusy || _letterAdderBusy || _combinedAdderBusy;
 
-    private void OnTextChange(string value)
-    {
-        Text = value;
-        navigationManager.NavigateTo($"./{value}", false, true);
-    }
+    private void OnTextChange(string value) => navigationManager.NavigateTo($"./{value}", false, true);
 }

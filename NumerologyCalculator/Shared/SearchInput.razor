@@ -1,66 +1,66 @@
 ﻿@inject NumerologyUiConfig numerologyUiConfig
 
-    <div class="input-group">
-        <input type="text"
-               class="form-control"
-               placeholder="Enter your values.."
-               maxlength="@numerologyUiConfig.MaxInputChars"
-               @bind:event="oninput"
-               @bind:get="Text"
-               @bind:set="OnInput"
-               @ref="_textRef" />
-        <div class="input-group-prepend">
-            <button type="button"
-                    class="btn btn-outline-secondary"
-                    disabled="@(Text is not { Length: > 0})"
-                    @onclick="OnInputClear">
-                <span class="oi oi-x"></span>
-            </button>
-        </div>
+<div class="input-group">
+    <input type="text"
+           class="form-control"
+           placeholder="Enter your values.."
+           maxlength="@numerologyUiConfig.MaxInputChars"
+           @bind:event="oninput"
+           @bind:get="Text"
+           @bind:set="OnInput"
+           @ref="_textRef" />
+    <div class="input-group-prepend">
+        <button type="button"
+                class="btn btn-outline-secondary"
+                disabled="@(Text is not { Length: > 0})"
+                @onclick="OnInputClear">
+            <span class="oi oi-x"></span>
+        </button>
     </div>
-    <i class="d-flex small text-muted mt-1">
-        @if (Loading == true)
-        {
-            <span class="loading flex-shrink-0"></span>
-        }
-        <span class="flex-fill"></span>
-        <span class="flex-shrink-0">@(Text?.Length ?? 0)</span>
-        <span class="flex-shrink-0">/</span>
-        <span class="flex-shrink-0">@numerologyUiConfig.MaxInputChars</span>
-    </i>
-
-    @code {
-        private ElementReference _textRef;
-
-        [Parameter]
-        public string? Text { get; set; }
-
-        [Parameter]
-        public EventCallback<string?> TextChanged { get; set; }
-
-        [Parameter]
-        public bool? Loading { get; set; }
-
-        [Parameter]
-        public bool? FocusOnLoad { get; set; }
-
-        private async Task OnInputClear(MouseEventArgs mouseEventArgs)
-        {
-            await OnInput(string.Empty);
-            await _textRef.FocusAsync();
-        }
-
-        private async Task OnInput(string value)
-        {
-            Text = value;
-            await TextChanged.InvokeAsync(value);
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender && FocusOnLoad == true)
-                await _textRef.FocusAsync();
-
-            await base.OnAfterRenderAsync(firstRender);
-        }
+</div>
+<i class="d-flex small text-muted mt-1">
+    @if (Loading == true)
+    {
+        <span class="loading flex-shrink-0"></span>
     }
+    <span class="flex-fill"></span>
+    <span class="flex-shrink-0">@(Text?.Length ?? 0)</span>
+    <span class="flex-shrink-0">/</span>
+    <span class="flex-shrink-0">@numerologyUiConfig.MaxInputChars</span>
+</i>
+
+@code {
+    private ElementReference _textRef;
+
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> TextChanged { get; set; }
+
+    [Parameter]
+    public bool? Loading { get; set; }
+
+    [Parameter]
+    public bool? FocusOnLoad { get; set; }
+
+    private async Task OnInputClear(MouseEventArgs mouseEventArgs)
+    {
+        await OnInput(string.Empty);
+        await _textRef.FocusAsync();
+    }
+
+    private async Task OnInput(string value)
+    {
+        Text = value;
+        await TextChanged.InvokeAsync(value);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && FocusOnLoad == true)
+            await _textRef.FocusAsync();
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
