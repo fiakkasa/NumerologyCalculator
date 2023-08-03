@@ -36,8 +36,8 @@
 
         var cut = Render(@<CalculationResult Text="12345" />);
 
-        Assert.Equal("12345", cut.Find("div.result").TextContent);
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("a.result"));
+        Assert.Equal("12345", cut.Find("div.nc-result").TextContent);
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("a.nc-result"));
     }
 
     [Fact]
@@ -61,7 +61,7 @@
 
         var cut = Render(@<CalculationResult Text="123" />);
 
-        Assert.Equal("123", cut.Find("a.result[href=\"/123\"][target=\"_blank\"]").TextContent);
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("div.result"));
+        Assert.Equal("123", cut.Find("a.nc-result[href=\"/123\"][target=\"_blank\"]").TextContent);
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("div.nc-result"));
     }
 }

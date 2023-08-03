@@ -4,13 +4,13 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-.loading:before {
+.nc-loading:before {
     animation: dots 1s infinite;
     content: '.';
     color: var(--bs-gray-500);
 }
 
-.hide-when-empty:empty {
+.nc-hide-when-empty:empty {
     display: none;
 }
 
@@ -50,13 +50,13 @@ html, body {
 }
 
 .card,
-.input-container {
+.nc-input-container {
     background-color: transparent;
     overflow: hidden;
 }
 
     .card:after,
-    .input-container:after {
+    .nc-input-container:after {
         content: ' ';
         display: block;
         position: absolute;
@@ -73,7 +73,7 @@ html, body {
     }
 
     .card > .card-body,
-    .input-container > * {
+    .nc-input-container > * {
         position: relative;
         z-index: 10;
     }

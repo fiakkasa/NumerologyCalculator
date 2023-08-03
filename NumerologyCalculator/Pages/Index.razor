@@ -5,28 +5,28 @@
 
 <PageTitle>Numerology Calculator</PageTitle>
 
-<div class="input-container position-relative position-sticky sticky-md-top z-3 px-3 pt-4 pb-0">
+<div class="nc-input-container position-relative position-sticky sticky-md-top z-3 px-3 pt-4 pb-0">
     <SearchInput @bind-Text:get="Text"
                  @bind-Text:set="OnTextChange"
                  Loading="Loading"
                  FocusOnLoad="true" />
 </div>
 
-<div class="px-3 pb-4 hide-when-empty">
+<div class="px-3 pb-4 nc-hide-when-empty">
     <DigitAdder Text="@Text"
                 Title="Numeric Calculation"
                 BusyChanged="v => _digitAdderBusy = v"
                 ResultChanged="v => _digitAdderResult = v" />
 </div>
 
-<div class="px-3 pb-4 hide-when-empty">
+<div class="px-3 pb-4 nc-hide-when-empty">
     <LetterAdder Text="@Text"
                  Title="Letter Calculation"
                  BusyChanged="v => _letterAdderBusy = v"
                  ResultChanged="v => _letterAdderResult = v" />
 </div>
 
-<div class="px-3 pb-4 hide-when-empty">
+<div class="px-3 pb-4 nc-hide-when-empty">
     <DigitAdder Text="@CombinedResult"
                 Title="Combined Numeric and Letter Calculation"
                 BusyChanged="v => _combinedAdderBusy = v" />

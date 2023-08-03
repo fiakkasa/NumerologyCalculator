@@ -7,30 +7,30 @@
             @for (var i = 0; i < steps.Count; i++)
             {
                 <div class="d-flex align-items-center py-1">
-                    <div class="count p-1">@(i+1).</div>
+                    <div class="nc-count p-1">@(i+1).</div>
 
                     @if (numerologyLinksService.IsNumerologyLinkEligible(steps[i].Sequence, out var sequence))
                     {
                         <a href="@numerologyLinksService.GetNumerologyUrl(sequence)"
                            target="_blank"
-                           class="equation btn p-1 border-0 text-secondary text-break">
+                           class="nc-equation btn p-1 border-0 text-secondary text-break">
                             @steps[i].Equation
                         </a>
                     }
                     else
                     {
-                        <div class="equation p-1 border-0 text-secondary text-break">
+                        <div class="nc-equation p-1 border-0 text-secondary text-break">
                             @steps[i].Equation
                         </div>
                     }
 
-                    <div class="equation-symbol text-success">=</div>
+                    <div class="nc-equation-symbol text-success">=</div>
 
                     @if (numerologyLinksService.IsNumerologyLinkEligible(steps[i].Sum, out var sum))
                     {
                         <a href="@numerologyLinksService.GetNumerologyUrl(sum)"
                            target="_blank"
-                           class="sum btn p-1 border-0 text-secondary">
+                           class="nc-sum btn p-1 border-0 text-secondary">
                             <span class="sum text-secondary font-monospace">
                                 @sum
                             </span>
@@ -38,7 +38,7 @@
                     }
                     else
                     {
-                        <div class="sum p-1 border-0 text-secondary font-monospace">
+                        <div class="nc-sum p-1 border-0 text-secondary font-monospace">
                             @sum
                         </div>
                     }

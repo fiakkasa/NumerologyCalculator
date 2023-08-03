@@ -49,12 +49,12 @@
 
         var cut = Render(@<CalculationSteps Steps="collection" />);
 
-        Assert.Equal("1.", cut.Find("div.count").TextContent);
-        Assert.Equal("1 + 1 + 1 + 1", cut.Find("div.equation").TextContent);
-        Assert.Equal("=", cut.Find("div.equation-symbol").TextContent);
-        Assert.Equal("4", cut.Find("div.sum").TextContent);
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("a.equation"));
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("a.sum"));
+        Assert.Equal("1.", cut.Find("div.nc-count").TextContent);
+        Assert.Equal("1 + 1 + 1 + 1", cut.Find("div.nc-equation").TextContent);
+        Assert.Equal("=", cut.Find("div.nc-equation-symbol").TextContent);
+        Assert.Equal("4", cut.Find("div.nc-sum").TextContent);
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("a.nc-equation"));
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("a.nc-sum"));
     }
 
     [Fact]
@@ -90,11 +90,11 @@
         
         var cut = Render(@<CalculationSteps Steps="collection" />);
 
-        Assert.Equal("1.", cut.Find("div.count").TextContent);
-        Assert.Equal("1 + 1 + 1", cut.Find("a.equation[href=\"/111\"][target=\"_blank\"]").TextContent);
-        Assert.Equal("=", cut.Find("div.equation-symbol").TextContent);
-        Assert.Equal("3", cut.Find("a.sum[href=\"/3\"][target=\"_blank\"]").TextContent);
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("div.equation"));
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("div.sum"));
+        Assert.Equal("1.", cut.Find("div.nc-count").TextContent);
+        Assert.Equal("1 + 1 + 1", cut.Find("a.nc-equation[href=\"/111\"][target=\"_blank\"]").TextContent);
+        Assert.Equal("=", cut.Find("div.nc-equation-symbol").TextContent);
+        Assert.Equal("3", cut.Find("a.nc-sum[href=\"/3\"][target=\"_blank\"]").TextContent);
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("div.nc-equation"));
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("div.nc-sum"));
     }
 }
