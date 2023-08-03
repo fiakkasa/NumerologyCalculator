@@ -1,0 +1,100 @@
+﻿@using NumerologyCalculator.Shared
+@using NumerologyCalculator.Interfaces
+@using NumerologyCalculator.Models
+
+@inherits TestContext
+
+@code
+{
+    private IServiceCollection AddServices(bool validUrls = false, string sequence = "", string sum = "")
+    {
+        var mockService = new Mock<INumerologyLinksService>();
+
+        if (validUrls)
+        {
+            mockService
+                .Setup(m => m.IsNumerologyLinkEligible(sequence, out sequence))
+                .Returns(true);
+
+            mockService
+                .Setup(m => m.IsNumerologyLinkEligible(sum, out sum))
+                .Returns(true);
+
+            mockService
+                .Setup(m => m.GetNumerologyUrl(sequence))
+                .Returns("/" + sequence);
+
+            mockService
+                .Setup(m => m.GetNumerologyUrl(sum))
+                .Returns("/" + sum);
+        }
+        else
+        {
+            mockService
+                .Setup(m => m.IsNumerologyLinkEligible(It.IsAny<string?>(), out sum))
+                .Returns(false);
+        }
+
+        return Services.AddSingleton(mockService.Object);
+    }
+
+    [Fact]
+    public void CalculationStepsComponentRendersNonLinksCorrectly()
+    {
+        AddServices(sum: "4");
+        var collection = new List<CalculationStep>
+        {
+            new("1 + 1 + 1 + 1", "4", 1, "1111")
+        };
+
+        var cut = Render(@<CalculationSteps Steps="collection" />);
+
+        Assert.Equal("1.", cut.Find("div.count").TextContent);
+        Assert.Equal("1 + 1 + 1 + 1", cut.Find("div.equation").TextContent);
+        Assert.Equal("=", cut.Find("div.equation-symbol").TextContent);
+        Assert.Equal("4", cut.Find("div.sum").TextContent);
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("a.equation"));
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("a.sum"));
+    }
+
+    [Fact]
+    public void CalculationStepsComponentRendersUnspecifiedCorrectly()
+    {
+        AddServices();
+        Render(@<CalculationSteps />).MarkupMatches(string.Empty);
+    }
+
+     [Fact]
+    public void CalculationStepsComponentRendersEmptyCorrectly()
+    {
+        AddServices();
+        var collection = new List<CalculationStep>();
+        Render(@<CalculationSteps Steps="collection" />).MarkupMatches(string.Empty);
+    }
+
+    [Fact]
+    public void CalculationStepsComponentRendersNullCorrectly()
+    {
+        AddServices();
+        Render(@<CalculationSteps Steps="null" />).MarkupMatches(string.Empty);
+    }
+
+    [Fact]
+    public void CalculationStepsComponentRendersLinksCorrectly()
+    {
+        AddServices(true, "111", "3");
+        var collection = new List<CalculationStep>
+        {
+            new("1 + 1 + 1", "3", 1, "111")
+        };
+        
+        var cut = Render(@<CalculationSteps Steps="collection" />);
+
+        Assert.Equal("1.", cut.Find("div.count").TextContent);
+        Assert.Equal("1 + 1 + 1", cut.Find("a.equation[href=\"/111\"][target=\"_blank\"]").TextContent);
+        Assert.Equal("=", cut.Find("div.equation-symbol").TextContent);
+        Assert.Equal("3", cut.Find("a.sum[href=\"/3\"][target=\"_blank\"]").TextContent);
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("div.equation"));
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("div.sum"));
+    }
+}

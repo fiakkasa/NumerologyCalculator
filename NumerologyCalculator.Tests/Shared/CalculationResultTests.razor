@@ -33,7 +33,11 @@
     public void CalculationResultComponentRendersTextCorrectly()
     {
         AddServices(result: "12345");
-        Render(@<CalculationResult Text="12345" />).MarkupMatches(@<div class="flex-shrink-0 m-0 p-0 border-0 px-3 text-secondary display-1">12345</div>);
+
+        var cut = Render(@<CalculationResult Text="12345" />);
+
+        Assert.Equal("12345", cut.Find("div.result").TextContent);
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("a.result"));
     }
 
     [Fact]
@@ -55,9 +59,9 @@
     {
         AddServices(true, "123");
 
-        var link = Render(@<CalculationResult Text="123" />).Find("a.btn[href=\"/123\"][target=\"_blank\"]");
+        var cut = Render(@<CalculationResult Text="123" />);
 
-        Assert.NotNull(link);
-        Assert.Equal("123", link.FirstChild?.TextContent);
+        Assert.Equal("123", cut.Find("a.result[href=\"/123\"][target=\"_blank\"]").TextContent);
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("div.result"));
     }
 }
