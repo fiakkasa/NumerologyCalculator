@@ -3,7 +3,7 @@ using NumerologyCalculator.Models;
 
 namespace NumerologyCalculator.Services;
 
-public class NumerologyUiService : INumerologyUiService 
+public class NumerologyUiService : INumerologyUiService
 {
     private readonly NumerologyUiConfig _config;
 

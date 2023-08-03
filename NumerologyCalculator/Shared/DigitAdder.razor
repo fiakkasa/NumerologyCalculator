@@ -1,6 +1,8 @@
 ﻿@inject INumerologyUiService numerologyUiService
 @inject INumerologyDigitCalculatorService numerologyDigitCalculatorService
 
+@implements IDisposable
+
 @if (_result is { Length: > 0 })
 {
     <div class="digit-adder calculator">
@@ -78,4 +80,6 @@
         }
         catch { }
     }
+
+    public void Dispose() => _cts.Cancel();
 }
