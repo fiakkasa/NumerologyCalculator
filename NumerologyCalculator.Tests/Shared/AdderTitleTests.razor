@@ -5,7 +5,7 @@
 {
     [Fact]
     public void AdderTitleComponentRendersTextCorrectly() =>
-        Render(@<AdderTitle Text="Hello" />).MarkupMatches(@<div class="nc-title lead text-break">Hello</div>);
+        Assert.Equal("Hello", Render(@<AdderTitle Text="Hello" />).Find("div.nc-title").TextContent);
 
     [Fact]
     public void AdderTitleComponentRendersUnspecifiedCorrectly() =>

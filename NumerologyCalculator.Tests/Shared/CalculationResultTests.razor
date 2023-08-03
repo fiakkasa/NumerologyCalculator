@@ -12,12 +12,12 @@
         if (validUrls)
         {
             mockService
-                .Setup(m => m.IsNumerologyLinkEligible(It.IsAny<string?>(), out result))
+                .Setup(m => m.IsNumerologyLinkEligible(result, out result))
                 .Returns(true);
 
             mockService
-                .Setup(m => m.GetNumerologyUrl(It.IsAny<string>()))
-                .Returns("/123");
+                .Setup(m => m.GetNumerologyUrl(result))
+                .Returns("/" + result);
         }
         else
         {
