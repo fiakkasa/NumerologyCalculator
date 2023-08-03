@@ -30,38 +30,68 @@
     }
 
     [Fact]
-    public void CalculationResultComponentRendersTextCorrectly()
-    {
-        AddServices(result: "12345");
-
-        var cut = Render(@<CalculationResult Text="12345" />);
-
-        Assert.Equal("12345", cut.Find("div.nc-result").TextContent);
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("a.nc-result"));
-    }
-
-    [Fact]
-    public void CalculationResultComponentRendersUnspecifiedCorrectly()
+    public void CalculationResultInitialRenderWithNoInputsRendersCorrectly()
     {
         AddServices();
         Render(@<CalculationResult />).MarkupMatches(string.Empty);
     }
 
     [Fact]
-    public void CalculationResultComponentRendersEmptyCorrectly()
+    public void CalculationResultInitialRenderWithEmptyTextRendersCorrectly()
     {
         AddServices();
         Render(@<CalculationResult Text="" />).MarkupMatches(string.Empty);
     }
 
     [Fact]
-    public void CalculationResultComponentRendersLinkCorrectly()
+    public void CalculationResultInitialRenderWithNonLinkTextRendersCorrectly()
+    {
+        AddServices(result: "12345");
+
+        var cut = Render(@<CalculationResult Text="12345" />);
+
+        Assert.Equal("12345", cut.Find("div.nc-result").TextContent);
+        Assert.Empty(cut.FindAll("a.nc-result"));
+    }
+
+    [Fact]
+    public void CalculationResultWithTextWhenTextIsSetToNullRendersCorrectly()
+    {
+        AddServices(result: "12345");
+
+        var cut = RenderComponent<CalculationResult>(p => p.Add(ps => ps.Text, "Hello"));
+
+        Assert.Equal("12345", cut.Find("div.nc-result").TextContent);
+        Assert.Empty(cut.FindAll("a.nc-result"));
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, null));
+
+        cut.MarkupMatches(string.Empty);
+    }
+
+    [Fact]
+    public void CalculationResultWithTextWhenTextIsSetToEmptyRendersCorrectly()
+    {
+        AddServices(result: "12345");
+
+        var cut = RenderComponent<CalculationResult>(p => p.Add(ps => ps.Text, "Hello"));
+
+        Assert.Equal("12345", cut.Find("div.nc-result").TextContent);
+        Assert.Empty(cut.FindAll("a.nc-result"));
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, string.Empty));
+
+        cut.MarkupMatches(string.Empty);
+    }
+
+    [Fact]
+    public void CalculationResultInitialRenderWithTextLinkRendersCorrectly()
     {
         AddServices(true, "123");
 
         var cut = Render(@<CalculationResult Text="123" />);
 
         Assert.Equal("123", cut.Find("a.nc-result[href=\"/123\"][target=\"_blank\"]").TextContent);
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("div.nc-result"));
+        Assert.Empty(cut.FindAll("div.nc-result"));
     }
 }

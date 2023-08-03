@@ -8,59 +8,176 @@
     private IServiceCollection AddServices() => 
         Services.AddSingleton(new NumerologyUiConfig(MaxInputChars: 10));
 
-    [Fact]
-    public void SearchInputInitialRenderWithNoInputsRendersCorrectly()
+    private (IRenderedComponent<SearchInput> cut, IElement input) Base(Action<ComponentParameterCollectionBuilder<SearchInput>>? parameterBuilder = default)
     {
         AddServices();
+        var cut = RenderComponent<SearchInput>(parameterBuilder);
+        var input = cut.Find("input.nc-search-input");
 
-        var cut = RenderComponent<SearchInput>();
-            
-        Assert.Null(cut.Find("input.nc-search-input").Attributes["value"]?.Value);
-        Assert.False(cut.Find("input.nc-search-input").IsFocused);
-        Assert.Equal("", cut.Find("button.nc-clear").Attributes["disabled"]?.Value);
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("span.nc-loading"));
+        return (cut, input);
+    }
+
+    private (IRenderedComponent<SearchInput> cut, IElement input) BaseTest()
+    {
+       var (cut, input) = Base();
+
+        Assert.Null(input.Attributes["value"]?.Value);
+        Assert.Equal("10", input.Attributes["maxlength"]?.Value);
+        Assert.Null(input.Attributes["autofocus"]?.Value);
+        Assert.Equal(string.Empty, cut.Find("button.nc-clear").Attributes["disabled"]?.Value);
+        Assert.Empty(cut.FindAll("span.nc-loading"));
+        Assert.Equal("0", cut.Find("span.nc-count").TextContent);
+        Assert.Equal("/", cut.Find("span.nc-separator").TextContent);
+        Assert.Equal("10", cut.Find("span.nc-max-chars").TextContent);
+
+        return (cut, input);
+    }
+
+    [Fact]
+    public void SearchInputInitialRenderWithNoInputsRendersCorrectly() => BaseTest();
+
+    [Fact]
+    public void SearchInputInitialRenderWithTextRendersCorrectly()
+    {
+        var (cut, input) = Base(p => p.Add(ps => ps.Text, "Hello"));
+
+        Assert.Equal("Hello", input.Attributes["value"]?.Value);
+        Assert.Equal("10", input.Attributes["maxlength"]?.Value);
+        Assert.Null(input.Attributes["autofocus"]?.Value);
+        Assert.Null(cut.Find("button.nc-clear").Attributes["disabled"]?.Value);
+        Assert.Empty(cut.FindAll("span.nc-loading"));
+        Assert.Equal("5", cut.Find("span.nc-count").TextContent);
+        Assert.Equal("/", cut.Find("span.nc-separator").TextContent);
+        Assert.Equal("10", cut.Find("span.nc-max-chars").TextContent);
+    }
+
+    [Fact]
+    public void SearchInputWithTextWhenTextIsSetRendersCorrectly()
+    {
+        var (cut, input) = BaseTest();
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, "Abc"));
+
+        Assert.Equal("Abc", input.Attributes["value"]?.Value);
+        Assert.Null(cut.Find("button.nc-clear").Attributes["disabled"]?.Value);
+        Assert.Equal("3", cut.Find("span.nc-count").TextContent);
+        Assert.Equal("/", cut.Find("span.nc-separator").TextContent);
+        Assert.Equal("10", cut.Find("span.nc-max-chars").TextContent);
+    }
+
+    [Fact]
+    public void SearchInputWithTextWhenTextIsSetToEmptyRendersCorrectly()
+    {
+        var (cut, input) = Base(p => p.Add(ps => ps.Text, "Hello"));
+
+        Assert.Equal("Hello", input.Attributes["value"]?.Value);
+        Assert.Equal("10", input.Attributes["maxlength"]?.Value);
+        Assert.Null(input.Attributes["autofocus"]?.Value);
+        Assert.Null(cut.Find("button.nc-clear").Attributes["disabled"]?.Value);
+        Assert.Empty(cut.FindAll("span.nc-loading"));
+        Assert.Equal("5", cut.Find("span.nc-count").TextContent);
+        Assert.Equal("/", cut.Find("span.nc-separator").TextContent);
+        Assert.Equal("10", cut.Find("span.nc-max-chars").TextContent);
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, string.Empty));
+
+        Assert.Equal(string.Empty, input.Attributes["value"]?.Value);
+        Assert.Equal(string.Empty, cut.Find("button.nc-clear").Attributes["disabled"]?.Value);
         Assert.Equal("0", cut.Find("span.nc-count").TextContent);
         Assert.Equal("/", cut.Find("span.nc-separator").TextContent);
         Assert.Equal("10", cut.Find("span.nc-max-chars").TextContent);
     }
 
     [Fact]
-    public void SearchInputInitialRenderWithInputAndLoadingRendersCorrectly()
+    public void SearchInputWithTextWhenTextIsSetToNullRendersCorrectly()
     {
-        AddServices();
+        var (cut, input) = Base(p => p.Add(ps => ps.Text, "Hello"));
 
-        var cut = RenderComponent<SearchInput>(p => 
-            p
-                .Add(ps => ps.Text, "Hello")
-                .Add(ps => ps.Loading, true)
-        );
-            
-        Assert.Equal("Hello", cut.Find("input.nc-search-input").Attributes["value"]?.Value);
-        Assert.False(cut.Find("input.nc-search-input").IsFocused);
+        Assert.Equal("Hello", input.Attributes["value"]?.Value);
+        Assert.Equal("10", input.Attributes["maxlength"]?.Value);
+        Assert.Null(input.Attributes["autofocus"]?.Value);
         Assert.Null(cut.Find("button.nc-clear").Attributes["disabled"]?.Value);
-        Assert.Single(cut.FindAll("span.nc-loading"));
+        Assert.Empty(cut.FindAll("span.nc-loading"));
         Assert.Equal("5", cut.Find("span.nc-count").TextContent);
+        Assert.Equal("/", cut.Find("span.nc-separator").TextContent);
+        Assert.Equal("10", cut.Find("span.nc-max-chars").TextContent);
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, null));
+
+        Assert.Null(input.Attributes["value"]?.Value);
+        Assert.Equal(string.Empty, cut.Find("button.nc-clear").Attributes["disabled"]?.Value);
+        Assert.Equal("0", cut.Find("span.nc-count").TextContent);
         Assert.Equal("/", cut.Find("span.nc-separator").TextContent);
         Assert.Equal("10", cut.Find("span.nc-max-chars").TextContent);
     }
 
-    @* [Fact]
-    public void SearchInputInitialRenderWithInputAndFocusRendersCorrectly()
+    [Fact]
+    public void SearchInputInitialRenderWithFocusOnLoadRendersCorrectly()
     {
-        AddServices();
+        var (cut, input) = Base(p => p.Add(ps => ps.FocusOnLoad, true));
 
-        var cut = RenderComponent<SearchInput>(p => 
-            p
-                .Add(ps => ps.Text, "Hello")
-                .Add(ps => ps.FocusOnLoad, true)
-        );
-            
-        Assert.Equal("Hello", cut.Find("input.nc-search-input").Attributes["value"]?.Value);
-        Assert.False(cut.Find("input.nc-search-input").IsFocused);
-        Assert.Null(cut.Find("button.nc-clear").Attributes["disabled"]?.Value);
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("span.nc-loading"));
+        Assert.Equal(string.Empty, input.Attributes["autofocus"]?.Value);
+    }
+
+    [Fact]
+    public void SearchInputInitialRenderWithLoadingRendersCorrectly()
+    {
+        var (cut, input) = Base(p => p.Add(ps => ps.Loading, true));
+
+        Assert.Single(cut.FindAll("span.nc-loading"));
+    }
+
+    [Fact]
+    public void SearchInputWhenLoadingIsSetRendersCorrectly()
+    {
+        var (cut, input) = BaseTest();
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Loading, true));
+
+        Assert.Single(cut.FindAll("span.nc-loading"));
+    }
+
+    [Fact]
+    public async Task SearchInputWithTextWhenClearIsClickedAndRendersCorrectly()
+    {
+        var (cut, input) = Base(p => p.Add(ps => ps.Text, "Hello"));  
+        var clearButton = cut.Find("button.nc-clear");
+
+        Assert.Equal("Hello", input.Attributes["value"]?.Value);
+        Assert.Equal("10", input.Attributes["maxlength"]?.Value);
+        Assert.Null(input.Attributes["autofocus"]?.Value);
+        Assert.Null(clearButton.Attributes["disabled"]?.Value);
+        Assert.Empty(cut.FindAll("span.nc-loading"));
         Assert.Equal("5", cut.Find("span.nc-count").TextContent);
         Assert.Equal("/", cut.Find("span.nc-separator").TextContent);
         Assert.Equal("10", cut.Find("span.nc-max-chars").TextContent);
-    } *@
+
+        await clearButton.ClickAsync(null!);
+
+        Assert.Equal(string.Empty, input.Attributes["value"]?.Value);
+        Assert.Equal(string.Empty, clearButton.Attributes["disabled"]?.Value);
+        Assert.Equal("0", cut.Find("span.nc-count").TextContent);
+    }
+
+    [Fact]
+    public async Task SearchInputWithTextWhenInputValueIsSetRendersCorrectly()
+    {
+        var (cut, input) = Base(p => p.Add(ps => ps.Text, "Hello"));  
+        var clearButton = cut.Find("button.nc-clear");
+
+        Assert.Equal("Hello", input.Attributes["value"]?.Value);
+        Assert.Equal("10", input.Attributes["maxlength"]?.Value);
+        Assert.Null(input.Attributes["autofocus"]?.Value);
+        Assert.Null(clearButton.Attributes["disabled"]?.Value);
+        Assert.Empty(cut.FindAll("span.nc-loading"));
+        Assert.Equal("5", cut.Find("span.nc-count").TextContent);
+        Assert.Equal("/", cut.Find("span.nc-separator").TextContent);
+        Assert.Equal("10", cut.Find("span.nc-max-chars").TextContent);
+
+        await input.InputAsync(new ChangeEventArgs { Value = string.Empty });
+
+        Assert.Equal(string.Empty, input.Attributes["value"]?.Value);
+        Assert.Equal(string.Empty, clearButton.Attributes["disabled"]?.Value);
+        Assert.Equal("0", cut.Find("span.nc-count").TextContent);
+    }
 }

@@ -2,16 +2,62 @@
 @inherits TestContext
 
 @code
-{
+{ 
     [Fact]
-    public void AdderTitleComponentRendersTextCorrectly() =>
-        Assert.Equal("Hello", Render(@<AdderTitle Text="Hello" />).Find("div.nc-title").TextContent);
-
-    [Fact]
-    public void AdderTitleComponentRendersUnspecifiedCorrectly() =>
+    public void AdderTitleInitialRenderWithNoInputsRendersCorrectly() =>
         Render(@<AdderTitle />).MarkupMatches(string.Empty);
 
     [Fact]
-    public void AdderTitleComponentRendersEmptyCorrectly() =>
+    public void AAdderTitleInitialRenderWithEmptyTextRendersCorrectly() =>
         Render(@<AdderTitle Text="" />).MarkupMatches(string.Empty);
+
+    [Fact]
+    public void AAdderTitleInitialRenderWithNullTextRendersCorrectly() =>
+        Render(@<AdderTitle Text="@null" />).MarkupMatches(string.Empty);
+    
+    [Fact]
+    public void AdderTitleInitialRenderWithTextRendersCorrectly() =>
+        Assert.Equal("Hello", Render(@<AdderTitle Text="Hello" />).Find("div.nc-title").TextContent);
+
+    [Fact]
+    public void AdderTitleWithTextWhenTextIsSetToNullRendersCorrectly()
+    {
+        var cut = RenderComponent<AdderTitle>(p => p.Add(ps => ps.Text, "Hello"));
+        
+        var title = cut.Find("div.nc-title");
+
+        Assert.Equal("Hello", title.TextContent);
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, null));
+
+        cut.MarkupMatches(string.Empty);
+    }
+
+    [Fact]
+    public void AdderTitleWithTextWhenTextIsSetToEmptyRendersCorrectly()
+    {
+        var cut = RenderComponent<AdderTitle>(p => p.Add(ps => ps.Text, "Hello"));
+        
+        var title = cut.Find("div.nc-title");
+
+        Assert.Equal("Hello", title.TextContent);
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, string.Empty));
+
+        cut.MarkupMatches(string.Empty);
+    }
+
+    [Fact]
+    public void AdderTitleWithTextWhenTextIsSetRendersCorrectly()
+    {
+        var cut = RenderComponent<AdderTitle>(p => p.Add(ps => ps.Text, "Hello"));
+        
+        var title = cut.Find("div.nc-title");
+
+        Assert.Equal("Hello", title.TextContent);
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, "Abc"));
+
+        Assert.Equal("Abc", title.TextContent);
+    }
 }

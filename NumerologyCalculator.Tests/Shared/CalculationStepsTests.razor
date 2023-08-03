@@ -39,33 +39,14 @@
     }
 
     [Fact]
-    public void CalculationStepsComponentRendersNonLinksCorrectly()
-    {
-        AddServices(sum: "4");
-        var collection = new List<CalculationStep>
-        {
-            new("1 + 1 + 1 + 1", "4", 1, "1111")
-        };
-
-        var cut = Render(@<CalculationSteps Steps="collection" />);
-
-        Assert.Equal("1.", cut.Find("div.nc-count").TextContent);
-        Assert.Equal("1 + 1 + 1 + 1", cut.Find("div.nc-equation").TextContent);
-        Assert.Equal("=", cut.Find("div.nc-equation-symbol").TextContent);
-        Assert.Equal("4", cut.Find("div.nc-sum").TextContent);
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("a.nc-equation"));
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("a.nc-sum"));
-    }
-
-    [Fact]
-    public void CalculationStepsComponentRendersUnspecifiedCorrectly()
+    public void CalculationStepsInitialRenderWithNoInputsRendersCorrectly()
     {
         AddServices();
         Render(@<CalculationSteps />).MarkupMatches(string.Empty);
     }
 
      [Fact]
-    public void CalculationStepsComponentRendersEmptyCorrectly()
+    public void CalculationStepsInitialRenderWithEmptyStepsRendersCorrectly()
     {
         AddServices();
         var collection = new List<CalculationStep>();
@@ -73,28 +54,91 @@
     }
 
     [Fact]
-    public void CalculationStepsComponentRendersNullCorrectly()
+    public void CalculationStepsInitialRenderWithNullStepsRendersCorrectly()
     {
         AddServices();
         Render(@<CalculationSteps Steps="null" />).MarkupMatches(string.Empty);
     }
 
     [Fact]
-    public void CalculationStepsComponentRendersLinksCorrectly()
+    public void CalculationStepsInitialRenderWithNonLinkStepsRendersCorrectly()
+    {
+        AddServices(sum: "4");
+        var collection = new List<CalculationStep>
+        {
+            new("1 + 1 + 1 + 1", "4", 1, "1111")
+        };
+        var cut = Render(@<CalculationSteps Steps="collection" />);
+
+        Assert.Equal("1.", cut.Find("div.nc-count").TextContent);
+        Assert.Equal("1 + 1 + 1 + 1", cut.Find("div.nc-equation").TextContent);
+        Assert.Equal("=", cut.Find("div.nc-equation-symbol").TextContent);
+        Assert.Equal("4", cut.Find("div.nc-sum").TextContent);
+        Assert.Empty(cut.FindAll("a.nc-equation"));
+        Assert.Empty(cut.FindAll("a.nc-sum"));
+    }
+
+    [Fact]
+    public void CalculationStepsWithNonLinkStepsWhenStepsSetToNullRendersCorrectly()
+    {
+        AddServices(sum: "4");
+        var cut = RenderComponent<CalculationSteps>(p => 
+            p.Add(ps => ps.Steps, new List<CalculationStep>
+            {
+                new("1 + 1 + 1 + 1", "4", 1, "1111")
+            })
+        );
+
+        Assert.Equal("1.", cut.Find("div.nc-count").TextContent);
+        Assert.Equal("1 + 1 + 1 + 1", cut.Find("div.nc-equation").TextContent);
+        Assert.Equal("=", cut.Find("div.nc-equation-symbol").TextContent);
+        Assert.Equal("4", cut.Find("div.nc-sum").TextContent);
+        Assert.Empty(cut.FindAll("a.nc-equation"));
+        Assert.Empty(cut.FindAll("a.nc-sum"));
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Steps, null));
+
+        cut.MarkupMatches(string.Empty);
+    }
+
+    [Fact]
+    public void CalculationStepsWithNonLinkStepsWhenStepsSetToEmptyRendersCorrectly()
+    {
+        AddServices(sum: "4");
+        var cut = RenderComponent<CalculationSteps>(p => 
+            p.Add(ps => ps.Steps, new List<CalculationStep>
+            {
+                new("1 + 1 + 1 + 1", "4", 1, "1111")
+            })
+        );
+
+        Assert.Equal("1.", cut.Find("div.nc-count").TextContent);
+        Assert.Equal("1 + 1 + 1 + 1", cut.Find("div.nc-equation").TextContent);
+        Assert.Equal("=", cut.Find("div.nc-equation-symbol").TextContent);
+        Assert.Equal("4", cut.Find("div.nc-sum").TextContent);
+        Assert.Empty(cut.FindAll("a.nc-equation"));
+        Assert.Empty(cut.FindAll("a.nc-sum"));
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Steps, new List<CalculationStep>()));
+
+        cut.MarkupMatches(string.Empty);
+    }
+
+    [Fact]
+    public void CalculationStepsInitialRenderWithLinkStepsRendersCorrectly()
     {
         AddServices(true, "111", "3");
         var collection = new List<CalculationStep>
         {
             new("1 + 1 + 1", "3", 1, "111")
         };
-        
         var cut = Render(@<CalculationSteps Steps="collection" />);
 
         Assert.Equal("1.", cut.Find("div.nc-count").TextContent);
         Assert.Equal("1 + 1 + 1", cut.Find("a.nc-equation[href=\"/111\"][target=\"_blank\"]").TextContent);
         Assert.Equal("=", cut.Find("div.nc-equation-symbol").TextContent);
         Assert.Equal("3", cut.Find("a.nc-sum[href=\"/3\"][target=\"_blank\"]").TextContent);
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("div.nc-equation"));
-        Assert.Throws<ElementNotFoundException>(() => cut.Find("div.nc-sum"));
+        Assert.Empty(cut.FindAll("div.nc-equation"));
+        Assert.Empty(cut.FindAll("div.nc-sum"));
     }
 }
