@@ -1,0 +1,63 @@
+﻿@using NumerologyCalculator.Shared
+@using NumerologyCalculator.Interfaces
+
+@inherits TestContext
+
+@code
+{
+    private IServiceCollection AddServices(bool validUrls = false, string result = "")
+    {
+        var mockService = new Mock<INumerologyLinksService>();
+
+        if (validUrls)
+        {
+            mockService
+                .Setup(m => m.IsNumerologyLinkEligible(It.IsAny<string?>(), out result))
+                .Returns(true);
+
+            mockService
+                .Setup(m => m.GetNumerologyUrl(It.IsAny<string>()))
+                .Returns("/123");
+        }
+        else
+        {
+            mockService
+                .Setup(m => m.IsNumerologyLinkEligible(It.IsAny<string?>(), out result))
+                .Returns(false);
+        }
+
+        return Services.AddSingleton(mockService.Object);
+    }
+
+    [Fact]
+    public void CalculationResultComponentRendersTextCorrectly()
+    {
+        AddServices(result: "12345");
+        Render(@<CalculationResult Text="12345" />).MarkupMatches(@<div class="flex-shrink-0 m-0 p-0 border-0 px-3 text-secondary display-1">12345</div>);
+    }
+
+    [Fact]
+    public void CalculationResultComponentRendersUnspecifiedCorrectly()
+    {
+        AddServices();
+        Render(@<CalculationResult />).MarkupMatches(string.Empty);
+    }
+
+    [Fact]
+    public void CalculationResultComponentRendersEmptyCorrectly()
+    {
+        AddServices();
+        Render(@<CalculationResult Text="" />).MarkupMatches(string.Empty);
+    }
+
+    [Fact]
+    public void CalculationResultComponentRendersLinkCorrectly()
+    {
+        AddServices(true, "123");
+
+        var link = Render(@<CalculationResult Text="123" />).Find("a.btn[href=\"/123\"][target=\"_blank\"]");
+
+        Assert.NotNull(link);
+        Assert.Equal("123", link.FirstChild?.TextContent);
+    }
+}

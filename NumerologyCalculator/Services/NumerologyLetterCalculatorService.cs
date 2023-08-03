@@ -1,11 +1,12 @@
 ﻿using NumerologyCalculator.Models;
+using NumerologyCalculator.Interfaces;
 
 namespace NumerologyCalculator.Services;
 
-public class NumerologyLetterCalculatorService
+public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorService
 {
     private const int _charCodeDelta = 48;
-    private readonly NumerologyUiService _numerologyUiService;
+    private readonly INumerologyUiService _numerologyUiService;
     private readonly Dictionary<char, int> _map = new()
     {
         ['A'] = 1,
@@ -44,7 +45,7 @@ public class NumerologyLetterCalculatorService
         ['R'] = 9
     };
 
-    public NumerologyLetterCalculatorService(NumerologyUiService numerologyUiService) =>
+    public NumerologyLetterCalculatorService(INumerologyUiService numerologyUiService) =>
         _numerologyUiService = numerologyUiService;
 
     public async Task<CalculationResult> Calculate(string text, CancellationToken cancellationToken) =>

@@ -1,13 +1,14 @@
-﻿using NumerologyCalculator.Models;
+﻿using NumerologyCalculator.Interfaces;
+using NumerologyCalculator.Models;
 
 namespace NumerologyCalculator.Services;
 
-public class NumerologyDigitCalculatorService
+public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorService
 {
     private const int _charCodeDelta = 48;
-    private readonly NumerologyUiService _numerologyUiService;
+    private readonly INumerologyUiService _numerologyUiService;
 
-    public NumerologyDigitCalculatorService(NumerologyUiService numerologyUiService) =>
+    public NumerologyDigitCalculatorService(INumerologyUiService numerologyUiService) =>
         _numerologyUiService = numerologyUiService;
 
     public async Task<CalculationResult> Calculate(string text, CancellationToken cancellationToken = default) =>

@@ -1,0 +1,17 @@
+﻿@using NumerologyCalculator.Shared
+@inherits TestContext
+
+@code
+{
+    [Fact]
+    public void AdderTitleComponentRendersTextCorrectly() =>
+        Render(@<AdderTitle Text="Hello" />).MarkupMatches(@<div class="lead text-break">Hello</div>);
+
+    [Fact]
+    public void AdderTitleComponentRendersUnspecifiedCorrectly() =>
+        Render(@<AdderTitle />).MarkupMatches(string.Empty);
+
+    [Fact]
+    public void AdderTitleComponentRendersEmptyCorrectly() =>
+        Render(@<AdderTitle Text="" />).MarkupMatches(string.Empty);
+}

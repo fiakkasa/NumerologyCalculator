@@ -1,8 +1,9 @@
-﻿using NumerologyCalculator.Models;
+﻿using NumerologyCalculator.Interfaces;
+using NumerologyCalculator.Models;
 
 namespace NumerologyCalculator.Services;
 
-public class NumerologyLinksService
+public class NumerologyLinksService : INumerologyLinksService
 {
     private readonly NumerologyLinksConfig _config;
 

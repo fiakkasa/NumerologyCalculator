@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using NumerologyCalculator;
+using NumerologyCalculator.Interfaces;
 using NumerologyCalculator.Models;
 using NumerologyCalculator.Services;
 
@@ -13,11 +14,11 @@ builder.Services
         CalculatorEquationSeparator: " + ",
         CalculatorEquationCombinedItemTemplate: "({0}: {1})"
     ))
-    .AddSingleton<NumerologyUiService>()
+    .AddSingleton<INumerologyUiService, NumerologyUiService>()
     .AddSingleton(new NumerologyLinksConfig(Url: "https://number.academy/numerology/{0}"))
-    .AddSingleton<NumerologyLinksService>()
-    .AddSingleton<NumerologyDigitCalculatorService>()
-    .AddSingleton<NumerologyLetterCalculatorService>();
+    .AddSingleton<INumerologyLinksService, NumerologyLinksService>()
+    .AddSingleton<INumerologyDigitCalculatorService, NumerologyDigitCalculatorService>()
+    .AddSingleton<INumerologyLetterCalculatorService, NumerologyLetterCalculatorService>();
 
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
