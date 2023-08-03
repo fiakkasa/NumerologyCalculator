@@ -2,7 +2,7 @@
 
 <div class="input-group">
     <input type="text"
-           class="form-control"
+           class="nc-search-input form-control"
            placeholder="Enter your values.."
            maxlength="@numerologyUiConfig.MaxInputChars"
            @bind:event="oninput"
@@ -11,7 +11,7 @@
            @ref="_textRef" />
     <div class="input-group-prepend">
         <button type="button"
-                class="btn btn-outline-secondary"
+                class="nc-clear btn btn-outline-secondary"
                 disabled="@(Text is not { Length: > 0})"
                 @onclick="OnInputClear">
             <span class="oi oi-x"></span>
@@ -24,9 +24,9 @@
         <span class="nc-loading flex-shrink-0"></span>
     }
     <span class="flex-fill"></span>
-    <span class="flex-shrink-0">@(Text?.Length ?? 0)</span>
-    <span class="flex-shrink-0">/</span>
-    <span class="flex-shrink-0">@numerologyUiConfig.MaxInputChars</span>
+    <span class="nc-count flex-shrink-0">@(Text?.Length ?? 0)</span>
+    <span class="nc-separator flex-shrink-0">/</span>
+    <span class="nc-max-chars flex-shrink-0">@numerologyUiConfig.MaxInputChars</span>
 </i>
 
 @code {

@@ -1,0 +1,66 @@
+﻿@using NumerologyCalculator.Shared
+@using NumerologyCalculator.Models
+
+@inherits TestContext
+
+@code
+{
+    private IServiceCollection AddServices() => 
+        Services.AddSingleton(new NumerologyUiConfig(MaxInputChars: 10));
+
+    [Fact]
+    public void SearchInputInitialRenderWithNoInputsRendersCorrectly()
+    {
+        AddServices();
+
+        var cut = RenderComponent<SearchInput>();
+            
+        Assert.Null(cut.Find("input.nc-search-input").Attributes["value"]?.Value);
+        Assert.False(cut.Find("input.nc-search-input").IsFocused);
+        Assert.Equal("", cut.Find("button.nc-clear").Attributes["disabled"]?.Value);
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("span.nc-loading"));
+        Assert.Equal("0", cut.Find("span.nc-count").TextContent);
+        Assert.Equal("/", cut.Find("span.nc-separator").TextContent);
+        Assert.Equal("10", cut.Find("span.nc-max-chars").TextContent);
+    }
+
+    [Fact]
+    public void SearchInputInitialRenderWithInputAndLoadingRendersCorrectly()
+    {
+        AddServices();
+
+        var cut = RenderComponent<SearchInput>(p => 
+            p
+                .Add(ps => ps.Text, "Hello")
+                .Add(ps => ps.Loading, true)
+        );
+            
+        Assert.Equal("Hello", cut.Find("input.nc-search-input").Attributes["value"]?.Value);
+        Assert.False(cut.Find("input.nc-search-input").IsFocused);
+        Assert.Null(cut.Find("button.nc-clear").Attributes["disabled"]?.Value);
+        Assert.Single(cut.FindAll("span.nc-loading"));
+        Assert.Equal("5", cut.Find("span.nc-count").TextContent);
+        Assert.Equal("/", cut.Find("span.nc-separator").TextContent);
+        Assert.Equal("10", cut.Find("span.nc-max-chars").TextContent);
+    }
+
+    @* [Fact]
+    public void SearchInputInitialRenderWithInputAndFocusRendersCorrectly()
+    {
+        AddServices();
+
+        var cut = RenderComponent<SearchInput>(p => 
+            p
+                .Add(ps => ps.Text, "Hello")
+                .Add(ps => ps.FocusOnLoad, true)
+        );
+            
+        Assert.Equal("Hello", cut.Find("input.nc-search-input").Attributes["value"]?.Value);
+        Assert.False(cut.Find("input.nc-search-input").IsFocused);
+        Assert.Null(cut.Find("button.nc-clear").Attributes["disabled"]?.Value);
+        Assert.Throws<ElementNotFoundException>(() => cut.Find("span.nc-loading"));
+        Assert.Equal("5", cut.Find("span.nc-count").TextContent);
+        Assert.Equal("/", cut.Find("span.nc-separator").TextContent);
+        Assert.Equal("10", cut.Find("span.nc-max-chars").TextContent);
+    } *@
+}
