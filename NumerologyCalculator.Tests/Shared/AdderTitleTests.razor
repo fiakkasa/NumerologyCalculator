@@ -8,11 +8,11 @@
         Render(@<AdderTitle />).MarkupMatches(string.Empty);
 
     [Fact]
-    public void AAdderTitleInitialRenderWithEmptyTextRendersCorrectly() =>
+    public void AdderTitleInitialRenderWithEmptyTextRendersCorrectly() =>
         Render(@<AdderTitle Text="" />).MarkupMatches(string.Empty);
 
     [Fact]
-    public void AAdderTitleInitialRenderWithNullTextRendersCorrectly() =>
+    public void AdderTitleInitialRenderWithNullTextRendersCorrectly() =>
         Render(@<AdderTitle Text="@null" />).MarkupMatches(string.Empty);
     
     [Fact]
