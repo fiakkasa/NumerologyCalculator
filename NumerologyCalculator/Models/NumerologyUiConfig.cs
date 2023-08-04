@@ -1,5 +1,6 @@
 ﻿namespace NumerologyCalculator.Models;
 
+[ExcludeFromCodeCoverage]
 public record NumerologyUiConfig(
     int MaxInputChars = 1_000,
     int UiInputDelay = 1_000,

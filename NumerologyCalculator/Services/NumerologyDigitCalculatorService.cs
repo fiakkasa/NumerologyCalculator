@@ -20,7 +20,7 @@ public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorServic
                         .Select(x => x - _charCodeDelta)
                         .ToList();
 
-                if (workingCollection is { Count: 0 })
+                if (workingCollection.Count == 0)
                     return new(Result: string.Empty, Steps: steps);
 
                 var result = workingCollection.Sum().ToString();
@@ -34,7 +34,7 @@ public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorServic
                     )
                 );
 
-                while (result is { Length: > 1 })
+                while (result.Length > 1)
                 {
                     workingCollection = result.Select(x => x - _charCodeDelta).ToList();
                     result = workingCollection.Sum().ToString();

@@ -39,14 +39,14 @@
     }
 
     [Fact]
-    public void CalculationStepsInitialRenderWithNoInputsRendersCorrectly()
+    public void CalculationSteps_Initial_Render_With_No_Inputs_Renders_Correctly()
     {
         AddServices();
         Render(@<CalculationSteps />).MarkupMatches(string.Empty);
     }
 
      [Fact]
-    public void CalculationStepsInitialRenderWithEmptyStepsRendersCorrectly()
+    public void CalculationSteps_Initial_Render_With_Empty_Steps_Renders_Correctly()
     {
         AddServices();
         var collection = new List<CalculationStep>();
@@ -54,14 +54,14 @@
     }
 
     [Fact]
-    public void CalculationStepsInitialRenderWithNullStepsRendersCorrectly()
+    public void CalculationSteps_Initial_Render_With_Null_Steps_Renders_Correctly()
     {
         AddServices();
         Render(@<CalculationSteps Steps="null" />).MarkupMatches(string.Empty);
     }
 
     [Fact]
-    public void CalculationStepsInitialRenderWithNonLinkStepsRendersCorrectly()
+    public void CalculationSteps_Initial_Render_With_Non_Link_Steps_Renders_Correctly()
     {
         AddServices(sum: "4");
         var collection = new List<CalculationStep>
@@ -79,7 +79,7 @@
     }
 
     [Fact]
-    public void CalculationStepsWithNonLinkStepsWhenStepsSetToNullRendersCorrectly()
+    public void CalculationSteps_With_Non_Link_Steps_When_Steps_Set_To_Null_Renders_Correctly()
     {
         AddServices(sum: "4");
         var cut = RenderComponent<CalculationSteps>(p => 
@@ -102,7 +102,7 @@
     }
 
     [Fact]
-    public void CalculationStepsWithNonLinkStepsWhenStepsSetToEmptyRendersCorrectly()
+    public void CalculationSteps_With_Non_Link_Steps_When_Steps_Set_To_Empty_Renders_Correctly()
     {
         AddServices(sum: "4");
         var cut = RenderComponent<CalculationSteps>(p => 
@@ -125,7 +125,7 @@
     }
 
     [Fact]
-    public void CalculationStepsInitialRenderWithLinkStepsRendersCorrectly()
+    public void CalculationSteps_Initial_Render_With_Link_Steps_Renders_Correctly()
     {
         AddServices(true, "111", "3");
         var collection = new List<CalculationStep>

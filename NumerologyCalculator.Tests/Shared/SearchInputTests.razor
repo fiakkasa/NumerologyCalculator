@@ -34,10 +34,10 @@
     }
 
     [Fact]
-    public void SearchInputInitialRenderWithNoInputsRendersCorrectly() => BaseTest();
+    public void SearchInput_Initial_Render_With_No_Inputs_Renders_Correctly() => BaseTest();
 
     [Fact]
-    public void SearchInputInitialRenderWithTextRendersCorrectly()
+    public void SearchInput_Initial_Render_With_Text_Renders_Correctly()
     {
         var (cut, input) = Base(p => p.Add(ps => ps.Text, "Hello"));
 
@@ -52,7 +52,7 @@
     }
 
     [Fact]
-    public void SearchInputWithTextWhenTextIsSetRendersCorrectly()
+    public void SearchInput_With_Text_When_Text_Is_Set_Renders_Correctly()
     {
         var (cut, input) = BaseTest();
 
@@ -66,7 +66,7 @@
     }
 
     [Fact]
-    public void SearchInputWithTextWhenTextIsSetToEmptyRendersCorrectly()
+    public void SearchInput_With_Text_When_Text_Is_Set_To_Empty_Renders_Correctly()
     {
         var (cut, input) = Base(p => p.Add(ps => ps.Text, "Hello"));
 
@@ -89,7 +89,7 @@
     }
 
     [Fact]
-    public void SearchInputWithTextWhenTextIsSetToNullRendersCorrectly()
+    public void SearchInput_With_Text_When_Text_Is_Set_To_Null_Renders_Correctly()
     {
         var (cut, input) = Base(p => p.Add(ps => ps.Text, "Hello"));
 
@@ -112,7 +112,7 @@
     }
 
     [Fact]
-    public void SearchInputInitialRenderWithFocusOnLoadRendersCorrectly()
+    public void SearchInput_Initial_Render_With_FocusOnLoad_Renders_Correctly()
     {
         var (cut, input) = Base(p => p.Add(ps => ps.FocusOnLoad, true));
 
@@ -120,7 +120,7 @@
     }
 
     [Fact]
-    public void SearchInputInitialRenderWithLoadingRendersCorrectly()
+    public void SearchInput_Initial_Render_With_Loading_Renders_Correctly()
     {
         var (cut, input) = Base(p => p.Add(ps => ps.Loading, true));
 
@@ -128,7 +128,7 @@
     }
 
     [Fact]
-    public void SearchInputWhenLoadingIsSetRendersCorrectly()
+    public void SearchInput_When_Loading_Is_Set_Renders_Correctly()
     {
         var (cut, input) = BaseTest();
 
@@ -138,7 +138,7 @@
     }
 
     [Fact]
-    public async Task SearchInputWithTextWhenClearIsClickedAndRendersCorrectly()
+    public async Task SearchInput_With_Text_When_Clear_Is_Clicked_Renders_Correctly()
     {
         var (cut, input) = Base(p => p.Add(ps => ps.Text, "Hello"));  
         var clearButton = cut.Find("button.nc-clear");
@@ -160,7 +160,7 @@
     }
 
     [Fact]
-    public async Task SearchInputWithTextWhenInputValueIsSetRendersCorrectly()
+    public async Task SearchInput_With_Text_When_Input_Value_Is_Set_Renders_Correctly()
     {
         var (cut, input) = Base(p => p.Add(ps => ps.Text, "Hello"));  
         var clearButton = cut.Find("button.nc-clear");

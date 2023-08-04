@@ -48,7 +48,7 @@ public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorServ
     public NumerologyLetterCalculatorService(INumerologyUiService numerologyUiService) =>
         _numerologyUiService = numerologyUiService;
 
-    public async Task<CalculationResult> Calculate(string text, CancellationToken cancellationToken) =>
+    public async Task<CalculationResult> Calculate(string text, CancellationToken cancellationToken = default) =>
         await Task.Run<CalculationResult>(() =>
             {
                 var steps = new List<CalculationStep>();
@@ -58,7 +58,7 @@ public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorServ
                         .Select(letter => (letter, number: _map[letter], composed: _numerologyUiService.ComposeCalculatorEquationCombinedItem(letter, _map[letter])))
                         .ToList();
 
-                if (workingCollection is { Count: 0 })
+                if (workingCollection.Count == 0)
                     return new(Result: string.Empty, Steps: steps);
 
                 var result = workingCollection.Select(x => x.number).Sum().ToString();
@@ -74,7 +74,7 @@ public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorServ
 
                 var numberCollection = new List<int>();
 
-                while (result is { Length: > 1 })
+                while (result.Length > 1)
                 {
                     numberCollection = result.Select(x => x - _charCodeDelta).ToList();
                     result = numberCollection.Sum().ToString();

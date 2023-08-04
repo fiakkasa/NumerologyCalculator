@@ -30,21 +30,21 @@
     }
 
     [Fact]
-    public void CalculationResultInitialRenderWithNoInputsRendersCorrectly()
+    public void CalculationResult_Initial_Render_With_No_Inputs_Renders_Correctly()
     {
         AddServices();
         Render(@<CalculationResult />).MarkupMatches(string.Empty);
     }
 
     [Fact]
-    public void CalculationResultInitialRenderWithEmptyTextRendersCorrectly()
+    public void CalculationResult_Initial_Render_With_Empty_Text_Renders_Correctly()
     {
         AddServices();
         Render(@<CalculationResult Text="" />).MarkupMatches(string.Empty);
     }
 
     [Fact]
-    public void CalculationResultInitialRenderWithNonLinkTextRendersCorrectly()
+    public void CalculationResult_Initial_Render_With_Non_Link_Text_Renders_Correctly()
     {
         AddServices(result: "12345");
 
@@ -55,7 +55,7 @@
     }
 
     [Fact]
-    public void CalculationResultWithTextWhenTextIsSetToNullRendersCorrectly()
+    public void CalculationResult_With_Text_When_Text_Is_Set_To_Null_Renders_Correctly()
     {
         AddServices(result: "12345");
 
@@ -70,7 +70,7 @@
     }
 
     [Fact]
-    public void CalculationResultWithTextWhenTextIsSetToEmptyRendersCorrectly()
+    public void CalculationResult_With_Text_When_Text_Is_Set_ToEmpty_Renders_Correctly()
     {
         AddServices(result: "12345");
 
@@ -85,7 +85,7 @@
     }
 
     [Fact]
-    public void CalculationResultInitialRenderWithTextLinkRendersCorrectly()
+    public void CalculationResult_Initial_Render_With_Text_Link_Renders_Correctly()
     {
         AddServices(true, "123");
 

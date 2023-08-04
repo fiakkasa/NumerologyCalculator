@@ -4,23 +4,23 @@
 @code
 { 
     [Fact]
-    public void AdderTitleInitialRenderWithNoInputsRendersCorrectly() =>
+    public void AdderTitle_Initial_Render_With_No_Inputs_Renders_Correctly() =>
         Render(@<AdderTitle />).MarkupMatches(string.Empty);
 
     [Fact]
-    public void AdderTitleInitialRenderWithEmptyTextRendersCorrectly() =>
+    public void AdderTitle_Initial_Render_With_Empty_Text_Renders_Correctly() =>
         Render(@<AdderTitle Text="" />).MarkupMatches(string.Empty);
 
     [Fact]
-    public void AdderTitleInitialRenderWithNullTextRendersCorrectly() =>
+    public void AdderTitle_Initial_Render_With_Null_Text_Renders_Correctly() =>
         Render(@<AdderTitle Text="@null" />).MarkupMatches(string.Empty);
     
     [Fact]
-    public void AdderTitleInitialRenderWithTextRendersCorrectly() =>
+    public void AdderTitle_Initial_Render_With_Text_Renders_Correctly() =>
         Assert.Equal("Hello", Render(@<AdderTitle Text="Hello" />).Find("div.nc-title").TextContent);
 
     [Fact]
-    public void AdderTitleWithTextWhenTextIsSetToNullRendersCorrectly()
+    public void AdderTitle_With_Text_When_Text_Is_Set_To_Null_Renders_Correctly()
     {
         var cut = RenderComponent<AdderTitle>(p => p.Add(ps => ps.Text, "Hello"));
         
@@ -34,7 +34,7 @@
     }
 
     [Fact]
-    public void AdderTitleWithTextWhenTextIsSetToEmptyRendersCorrectly()
+    public void AdderTitle_With_Text_When_Text_Is_Set_To_Empty_Renders_Correctly()
     {
         var cut = RenderComponent<AdderTitle>(p => p.Add(ps => ps.Text, "Hello"));
         
@@ -48,7 +48,7 @@
     }
 
     [Fact]
-    public void AdderTitleWithTextWhenTextIsSetRendersCorrectly()
+    public void AdderTitle_With_Text_When_Text_Is_Set_Renders_Correctly()
     {
         var cut = RenderComponent<AdderTitle>(p => p.Add(ps => ps.Text, "Hello"));
         
