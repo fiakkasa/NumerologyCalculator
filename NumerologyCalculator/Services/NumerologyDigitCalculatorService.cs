@@ -23,12 +23,12 @@ public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorServic
                 if (workingCollection.Count == 0)
                     return new(Result: string.Empty, Steps: steps);
 
-                var result = workingCollection.Sum().ToString();
+                string result;
 
                 steps.Add(
                     new(
                         Equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection),
-                        Sum: result,
+                        Sum: result = workingCollection.Sum().ToString(),
                         NumberOfCharacters: workingCollection.Count,
                         Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection)
                     )
@@ -37,12 +37,11 @@ public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorServic
                 while (result.Length > 1)
                 {
                     workingCollection = result.Select(x => x - _charCodeDelta).ToList();
-                    result = workingCollection.Sum().ToString();
 
                     steps.Add(
                         new(
                             Equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection),
-                            Sum: result,
+                            Sum: result = workingCollection.Sum().ToString(),
                             NumberOfCharacters: workingCollection.Count,
                             Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection)
                         )

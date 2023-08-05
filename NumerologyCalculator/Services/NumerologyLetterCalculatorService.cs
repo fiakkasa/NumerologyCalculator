@@ -61,29 +61,28 @@ public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorServ
                 if (workingCollection.Count == 0)
                     return new(Result: string.Empty, Steps: steps);
 
-                var result = workingCollection.Select(x => x.number).Sum().ToString();
+                string result;
 
                 steps.Add(
                     new(
-                        Equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection.Select(x => x.composed)),
-                        Sum: result,
+                        Equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection.Select(x => x.composed).ToList()),
+                        Sum: result = workingCollection.Select(x => x.number).Sum().ToString(),
                         NumberOfCharacters: workingCollection.Count,
-                        Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection.Select(x => x.number))
+                        Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection.Select(x => x.number).ToList())
                     )
                 );
 
-                var numberCollection = new List<int>();
+                List<int> numberCollection;
 
                 while (result.Length > 1)
                 {
                     numberCollection = result.Select(x => x - _charCodeDelta).ToList();
-                    result = numberCollection.Sum().ToString();
 
                     steps.Add(
                         new(
                             Equation: _numerologyUiService.ComposeCalculatorEntryEquation(numberCollection),
-                            Sum: result,
-                            NumberOfCharacters: workingCollection.Count,
+                            Sum: result = numberCollection.Sum().ToString(),
+                            NumberOfCharacters: numberCollection.Count,
                             Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(numberCollection)
                         )
                     );

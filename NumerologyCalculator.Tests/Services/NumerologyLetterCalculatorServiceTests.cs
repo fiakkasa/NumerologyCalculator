@@ -14,20 +14,17 @@ public class NumerologyLetterCalculatorServiceTests
         _mockNumerologyUiService = new Mock<INumerologyUiService>();
 
         _mockNumerologyUiService
-            .Setup(m => m.ComposeCalculatorEntryEquation(It.IsAny<List<int>>()))
-            .Returns("1 + 2 + 3");
-
-        _mockNumerologyUiService
             .Setup(m => m.ComposeCalculatorEntryEquation(It.IsAny<List<string>>()))
             .Returns("1 + 2 + 3");
 
         _mockNumerologyUiService
-            .Setup(m => m.ComposeCalculatorEntrySequence(It.IsAny<List<int>>()))
-            .Returns("123");
+            .Setup(m => m.ComposeCalculatorEntryEquation(It.IsAny<List<int>>()))
+            .Returns("1 + 2");
 
         _mockNumerologyUiService
-            .Setup(m => m.ComposeCalculatorEntrySequence(It.IsAny<List<string>>()))
-            .Returns("123");
+            .SetupSequence(m => m.ComposeCalculatorEntrySequence(It.IsAny<List<int>>()))
+            .Returns("123")
+            .Returns("12");
 
         _mockNumerologyUiService
             .Setup(m => m.ComposeCalculatorEquationCombinedItem(It.IsAny<string>(), It.IsAny<string>()))
