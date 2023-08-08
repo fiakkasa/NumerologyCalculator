@@ -22,7 +22,7 @@ public class NumerologyUiService : INumerologyUiService
     public async Task InputDelay(CancellationToken cancellationToken = default) =>
         await Task.Delay(_config.UiInputDelay, cancellationToken);
 
-    public string NormalizeTextInput(string? value) => value switch
+    public string NormalizeTextInput(string? value) => value?.Replace(" ", string.Empty) switch
     {
         { Length: > 0 } v when v.Length > _config.MaxInputChars => v[.._config.MaxInputChars],
         { Length: > 0 } v => v,

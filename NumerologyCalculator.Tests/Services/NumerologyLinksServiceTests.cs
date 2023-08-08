@@ -37,6 +37,10 @@ public class NumerologyLinksServiceTests
     }
 
     [Fact]
+    public void NumerologyLinksService_GetNumerologyUrl_Url_When_Null() =>
+        Assert.Equal("/", _numerologyLinksService.GetNumerologyUrl(null));
+
+    [Fact]
     public void NumerologyLinksService_GetNumerologyUrl_Url_When_Empty() =>
         Assert.Equal("/", _numerologyLinksService.GetNumerologyUrl(string.Empty));
 

@@ -44,7 +44,7 @@
 
     private bool Loading => _digitAdderBusy || _letterAdderBusy || _combinedAdderBusy;
 
-    private string CombinedResult => (_digitAdderResult is { Length: > 0 } && _letterAdderResult is { Length: > 0 }) switch
+    private string CombinedResult => (_digitAdderResult.Length > 0 && _letterAdderResult.Length > 0) switch
     {
         true => _digitAdderResult + _letterAdderResult,
         _ => string.Empty

@@ -43,9 +43,27 @@ public class NumerologyLetterCalculatorServiceTests
     }
 
     [Fact]
+    public async Task NumerologyLetterCalculatorService_Calculate_Empty_When_Null()
+    {
+        var result = await _numerologyLetterCalculatorService.Calculate(null);
+
+        Assert.Equal(string.Empty, result.Result);
+        Assert.Empty(result.Steps);
+    }
+
+    [Fact]
     public async Task NumerologyLetterCalculatorService_Calculate_Empty_When_Empty()
     {
         var result = await _numerologyLetterCalculatorService.Calculate(string.Empty);
+
+        Assert.Equal(string.Empty, result.Result);
+        Assert.Empty(result.Steps);
+    }
+
+     [Fact]
+    public async Task NumerologyLetterCalculatorService_Calculate_Empty_When_No_Letters()
+    {
+        var result = await _numerologyLetterCalculatorService.Calculate(" 1 ");
 
         Assert.Equal(string.Empty, result.Result);
         Assert.Empty(result.Steps);

@@ -34,9 +34,27 @@ public class NumerologyDigitCalculatorServiceTests
     }
 
     [Fact]
+    public async Task NumerologyDigitCalculatorService_Calculate_Empty_When_Null()
+    {
+        var result = await _numerologyDigitCalculatorService.Calculate(null);
+
+        Assert.Equal(string.Empty, result.Result);
+        Assert.Empty(result.Steps);
+    }
+
+    [Fact]
     public async Task NumerologyDigitCalculatorService_Calculate_Empty_When_Empty()
     {
         var result = await _numerologyDigitCalculatorService.Calculate(string.Empty);
+
+        Assert.Equal(string.Empty, result.Result);
+        Assert.Empty(result.Steps);
+    }
+
+    [Fact]
+    public async Task NumerologyDigitCalculatorService_Calculate_Empty_When_No_Digits()
+    {
+        var result = await _numerologyDigitCalculatorService.Calculate(" A ");
 
         Assert.Equal(string.Empty, result.Result);
         Assert.Empty(result.Steps);

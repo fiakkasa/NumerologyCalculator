@@ -1,0 +1,79 @@
+﻿@using NumerologyCalculator.Shared
+@using NumerologyCalculator.Pages
+@using NumerologyCalculator.Interfaces
+@using NumerologyCalculator.Services
+@using NumerologyCalculator.Models
+
+@inherits TestContext
+
+@code
+{ 
+    [Fact]
+    public void Index_With_Stubs_And_Text_Renders_Correctly()
+    {
+        var c = ComponentFactories.AddStub<SearchInput>();
+        ComponentFactories.AddStub<DigitAdder>();
+        ComponentFactories.AddStub<LetterAdder>();
+
+        var cut = RenderComponent<NumerologyCalculator.Pages.Index>(p => p.Add(ps => ps.Text, "Hello"));
+            
+        Assert.Single(cut.FindAll("div.nc-input-container"));
+        Assert.Equal(3, cut.FindAll("div.nc-hide-when-empty").Count);
+    }
+
+    [Fact]
+    public async Task Index_With_Components_When_Input_Is_Changed_Renders_Correctly()
+    {
+        Services
+            .AddSingleton(new NumerologyUiConfig(
+                MaxInputChars: 1_000,
+                UiInputDelay: 600,
+                CalculatorEquationSeparator: " + ",
+                CalculatorEquationCombinedItemTemplate: "({0}: {1})"
+            ))
+            .AddSingleton<INumerologyUiService, NumerologyUiService>()
+            .AddSingleton(new NumerologyLinksConfig(Url: "https://number.academy/numerology/{0}"))
+            .AddSingleton<INumerologyLinksService, NumerologyLinksService>()
+            .AddSingleton<INumerologyDigitCalculatorService, NumerologyDigitCalculatorService>()
+            .AddSingleton<INumerologyLetterCalculatorService, NumerologyLetterCalculatorService>();
+
+        var cut = RenderComponent<NumerologyCalculator.Pages.Index>();
+
+        var searchInput = cut.FindComponent<SearchInput>();
+        var letterAdder = cut.FindComponent<LetterAdder>();
+        var digitAdders = cut.FindComponents<DigitAdder>();
+ 
+        Assert.Null(searchInput.Instance.Text);
+        Assert.Null(letterAdder.Instance.Text);
+        Assert.Single(digitAdders.Where(x => x.Instance.Text == null));
+        Assert.Empty(cut.FindComponents<NumerologyCalculator.Shared.CalculationResult>());
+
+        cut.WaitForAssertion(() => Assert.Equal(2, digitAdders.Where(x => x.Instance.Text is not { Length: > 0 }).Count()));
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, string.Empty));
+
+        Assert.Equal(string.Empty, searchInput.Instance.Text);
+        Assert.Equal(string.Empty, letterAdder.Instance.Text);
+        Assert.Equal(2, digitAdders.Where(x => x.Instance.Text == string.Empty).Count());
+        Assert.Empty(cut.FindComponents<NumerologyCalculator.Shared.CalculationResult>());
+        
+        await cut.Find("input.nc-search-input").InputAsync(new ChangeEventArgs { Value = "A 1" });
+
+        Assert.Equal("A 1", searchInput.Instance.Text);
+        Assert.Equal("A 1", letterAdder.Instance.Text);
+        Assert.Single(digitAdders.Where(x => x.Instance.Text == "A 1"));
+
+        cut.WaitForAssertion(() => Assert.Single(digitAdders.Where(x => x.Instance.Text == "11")));
+        cut.WaitForAssertion(() => Assert.Equal(3, cut.FindComponents<NumerologyCalculator.Shared.CalculationResult>().Count));
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, "  * Hello ^ World $ 20230101 ! "));
+
+        Assert.Equal("  * Hello ^ World $ 20230101 ! ", searchInput.Instance.Text);
+        Assert.Equal("  * Hello ^ World $ 20230101 ! ", letterAdder.Instance.Text);
+        Assert.Single(digitAdders.Where(x => x.Instance.Text == "  * Hello ^ World $ 20230101 ! "));
+
+        cut.WaitForAssertion(() => Assert.Single(digitAdders.Where(x => x.Instance.Text == "97")));
+        cut.WaitForAssertion(() => Assert.Single(cut.FindComponents<NumerologyCalculator.Shared.CalculationResult>().Where(x => x.Instance.Text == "9")));
+        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindComponents<NumerologyCalculator.Shared.CalculationResult>().Where(x => x.Instance.Text == "7").Count()));
+    }
+}

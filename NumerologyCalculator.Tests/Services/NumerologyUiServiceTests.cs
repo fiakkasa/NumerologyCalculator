@@ -34,7 +34,7 @@ public class NumerologyUiServiceTests
 
     [Fact]
     public void NumerologyUiServiceTests_NormalizeTextInput_Text_When_Within_Bounds() =>
-        Assert.Equal("hello", _numerologyUiService.NormalizeTextInput("hello"));
+        Assert.Equal("hello", _numerologyUiService.NormalizeTextInput(" he l lo   "));
 
     [Fact]
     public void NumerologyUiServiceTests_NormalizeTextInput_Redacted_Text_When_Out_Of_Bounds() =>

@@ -3,7 +3,7 @@
 
 @implements IDisposable
 
-@if (_result is { Length: > 0 })
+@if (_result.Length > 0 && _steps.Count > 0)
 {
     <div class="digit-adder calculator">
         <AdderTitle Text="@Title" />
@@ -11,7 +11,7 @@
         <div class="d-flex align-items-center flex-column flex-sm-row mt-2">
             <CalculationResult Text="@_result" />
 
-            @if (_steps.FirstOrDefault()?.NumberOfCharacters > 1)
+            @if (_steps[0].NumberOfCharacters > 1)
             {
                 <CalculationSteps Steps="_steps" />
             }

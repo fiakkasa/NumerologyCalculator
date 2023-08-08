@@ -48,10 +48,14 @@ public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorServ
     public NumerologyLetterCalculatorService(INumerologyUiService numerologyUiService) =>
         _numerologyUiService = numerologyUiService;
 
-    public async Task<CalculationResult> Calculate(string text, CancellationToken cancellationToken = default) =>
+    public async Task<CalculationResult> Calculate(string? text, CancellationToken cancellationToken = default) =>
         await Task.Run<CalculationResult>(() =>
             {
                 var steps = new List<CalculationStep>();
+
+                if (text is not { Length: > 0 })
+                    return new(Result: string.Empty, Steps: steps);
+
                 var workingCollection =
                     text.ToUpper()
                         .Where(x => char.IsAsciiLetter(x) && _map.ContainsKey(x))

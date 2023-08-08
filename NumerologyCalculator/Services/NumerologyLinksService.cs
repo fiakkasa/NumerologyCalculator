@@ -13,6 +13,6 @@ public class NumerologyLinksService : INumerologyLinksService
     public bool IsNumerologyLinkEligible(string? value, out string result) =>
         (result = value is { } v ? v : string.Empty) is { Length: > 0 and <= 3 };
 
-    public string GetNumerologyUrl(string value) =>
-        string.Format(_config.Url, value);
+    public string GetNumerologyUrl(string? value) =>
+        string.Format(_config.Url, value ?? string.Empty);
 }
