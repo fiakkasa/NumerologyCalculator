@@ -1,0 +1,3 @@
+# NumerologyCalculator
+
+Simple numerology calculator!
