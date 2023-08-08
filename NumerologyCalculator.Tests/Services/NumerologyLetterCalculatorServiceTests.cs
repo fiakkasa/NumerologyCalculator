@@ -60,7 +60,7 @@ public class NumerologyLetterCalculatorServiceTests
         Assert.Empty(result.Steps);
     }
 
-     [Fact]
+    [Fact]
     public async Task NumerologyLetterCalculatorService_Calculate_Empty_When_No_Letters()
     {
         var result = await _numerologyLetterCalculatorService.Calculate(" 1 ");
