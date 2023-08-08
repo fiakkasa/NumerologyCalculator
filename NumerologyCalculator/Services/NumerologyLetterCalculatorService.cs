@@ -51,10 +51,8 @@ public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorServ
     public async Task<CalculationResult> Calculate(string? text, CancellationToken cancellationToken = default) =>
         await Task.Run<CalculationResult>(() =>
             {
-                var steps = new List<CalculationStep>();
-
                 if (text is not { Length: > 0 })
-                    return new(Result: string.Empty, Steps: steps);
+                    return new(Result: string.Empty, Steps: Enumerable.Empty<CalculationStep>());
 
                 var workingCollection =
                     text.ToUpper()
@@ -63,19 +61,18 @@ public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorServ
                         .ToList();
 
                 if (workingCollection.Count == 0)
-                    return new(Result: string.Empty, Steps: steps);
+                    return new(Result: string.Empty, Steps: Enumerable.Empty<CalculationStep>());
 
                 string result;
-
-                steps.Add(
+                var steps = new List<CalculationStep>
+                {
                     new(
                         Equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection.Select(x => x.composed).ToList()),
                         Sum: result = workingCollection.Select(x => x.number).Sum().ToString(),
                         NumberOfCharacters: workingCollection.Count,
                         Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection.Select(x => x.number).ToList())
                     )
-                );
-
+                };
                 List<int> numberCollection;
 
                 while (result.Length > 1)

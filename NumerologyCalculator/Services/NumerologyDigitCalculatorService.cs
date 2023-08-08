@@ -14,10 +14,8 @@ public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorServic
     public async Task<CalculationResult> Calculate(string? text, CancellationToken cancellationToken = default) =>
         await Task.Run<CalculationResult>(() =>
             {
-                var steps = new List<CalculationStep>();
-
                 if (text is not { Length: > 0 })
-                    return new(Result: string.Empty, Steps: steps);
+                    return new(Result: string.Empty, Steps: Enumerable.Empty<CalculationStep>());
 
                 var workingCollection =
                     text.Where(x => char.IsDigit(x))
@@ -25,18 +23,18 @@ public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorServic
                         .ToList();
 
                 if (workingCollection.Count == 0)
-                    return new(Result: string.Empty, Steps: steps);
+                    return new(Result: string.Empty, Steps: Enumerable.Empty<CalculationStep>());
 
                 string result;
-
-                steps.Add(
+                var steps = new List<CalculationStep>
+                {
                     new(
                         Equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection),
                         Sum: result = workingCollection.Sum().ToString(),
                         NumberOfCharacters: workingCollection.Count,
                         Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection)
                     )
-                );
+                };
 
                 while (result.Length > 1)
                 {
