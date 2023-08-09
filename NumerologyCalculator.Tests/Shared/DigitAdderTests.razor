@@ -1,0 +1,171 @@
+﻿@using NumerologyCalculator.Shared
+@using NumerologyCalculator.Interfaces
+@using NumerologyCalculator.Models
+
+@inherits TestContext
+
+@code
+{
+    private IRenderedComponent<DigitAdder> Base(
+        INumerologyUiService? numerologyUiService = default, 
+        INumerologyDigitCalculatorService? numerologyDigitCalculatorService = default,
+        INumerologyLinksService? numerologyLinksService = default,
+        Action<ComponentParameterCollectionBuilder<DigitAdder>>? parameterBuilder = default
+    )
+    {
+        if(numerologyUiService is { })
+        {
+            numerologyUiService
+                .InputDelay(Arg.Any<CancellationToken>())
+                .Returns(Task.Delay(100));
+        }
+
+        Services.AddSingleton<INumerologyUiService>(numerologyUiService ?? Substitute.For<INumerologyUiService>());
+        Services.AddSingleton<INumerologyDigitCalculatorService>(numerologyDigitCalculatorService ?? Substitute.For<INumerologyDigitCalculatorService>());
+        Services.AddSingleton<INumerologyLinksService>(numerologyLinksService ?? Substitute.For<INumerologyLinksService>());
+
+        return RenderComponent<DigitAdder>(parameterBuilder);
+    }
+
+    [Fact]
+    public void DigitAdder_Initial_Render_With_No_Inputs_Renders_Correctly() => 
+        Base().MarkupMatches(string.Empty);
+    
+    [Fact]
+    public void DigitAdder_Initial_Render_With_Empty_Text_Renders_Correctly()
+    {
+        var mockNumerologyUiService = Substitute.For<INumerologyUiService>();
+        mockNumerologyUiService
+            .NormalizeTextInput(Arg.Any<string?>())
+            .Returns(string.Empty);
+
+        Base(numerologyUiService: mockNumerologyUiService, parameterBuilder: p => p.Add(ps => ps.Text, string.Empty)).MarkupMatches(string.Empty);
+    }
+
+    [Fact]
+    public void DigitAdder_Initial_Render_With_Single_Digit_Text_Renders_Correctly()
+    {
+        const string text = "1";
+        var mockNumerologyUiService = Substitute.For<INumerologyUiService>();
+        mockNumerologyUiService
+            .NormalizeTextInput(Arg.Any<string?>())
+            .Returns(text);
+        var mockNumerologyDigitCalculatorService = Substitute.For<INumerologyDigitCalculatorService>();
+        mockNumerologyDigitCalculatorService
+            .Calculate(Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns(
+                Task.FromResult(
+                    new CalculationResultModel(
+                        Result: text, 
+                        Steps: new List<CalculationStepModel> { new (text, text, text.Length, text) }
+                    )
+                )
+            );
+
+        var cut = Base(
+            numerologyUiService: mockNumerologyUiService, 
+            numerologyDigitCalculatorService: mockNumerologyDigitCalculatorService, 
+            parameterBuilder: p => p.Add(ps => ps.Text, text)
+        );
+
+        cut.WaitForAssertion(() => Assert.Equal(text, cut.FindComponent<CalculationResult>().Instance.Text));
+    }
+
+    [Fact]
+    public void DigitAdder_Initial_Render_With_Multiple_Characters_And_Digits_Text_Renders_Correctly()
+    {
+        const string text = "a2b8";
+        var mockNumerologyUiService = Substitute.For<INumerologyUiService>();
+        mockNumerologyUiService
+            .NormalizeTextInput(Arg.Any<string?>())
+            .Returns(text);
+        var mockNumerologyDigitCalculatorService = Substitute.For<INumerologyDigitCalculatorService>();
+        mockNumerologyDigitCalculatorService
+            .Calculate(Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns(
+                Task.FromResult(
+                    new CalculationResultModel(
+                        Result: "1", 
+                        Steps: new List<CalculationStepModel> 
+                        { 
+                            new("2 + 8", "10", 2, "28"), 
+                            new("1 + 0", "1", 1, "10")
+                        }
+                    )
+                )
+            );
+
+        var cut = Base(
+            numerologyUiService: mockNumerologyUiService, 
+            numerologyDigitCalculatorService: mockNumerologyDigitCalculatorService, 
+            parameterBuilder: p => p.Add(ps => ps.Text, text)
+        );
+
+        cut.WaitForAssertion(() => Assert.Equal("1", cut.FindComponent<CalculationResult>().Instance.Text));
+        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindComponent<CalculationSteps>().Instance.Steps?.Count));
+    }
+
+    [Fact]
+    public void DigitAdder_With_Text_When_Text_Is_Set_Renders_Correctly()
+    {
+        var mockNumerologyUiService = Substitute.For<INumerologyUiService>();
+        mockNumerologyUiService
+            .NormalizeTextInput(Arg.Any<string?>())
+            .Returns(x => x[0] ?? string.Empty);
+        var mockNumerologyDigitCalculatorService = Substitute.For<INumerologyDigitCalculatorService>();
+        mockNumerologyDigitCalculatorService
+            .Calculate(Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns(x => 
+                Task.FromResult(
+                    x[0] switch
+                    {
+                        "a2b8" => new CalculationResultModel(
+                            Result: "1", 
+                            Steps: new List<CalculationStepModel> 
+                            { 
+                                new("2 + 8", "10", 2, "28"), 
+                                new("1 + 0", "1", 1, "10")
+                            }
+                        ),
+                        "2" => new CalculationResultModel(
+                            Result: "2", 
+                            Steps: new List<CalculationStepModel> 
+                            { 
+                                new("2", "2", 1, "2")
+                            }
+                        ),
+                        _ => new CalculationResultModel(string.Empty, Enumerable.Empty<CalculationStepModel>())
+                    }
+                )
+            );
+
+        var cut = Base(
+            numerologyUiService: mockNumerologyUiService, 
+            numerologyDigitCalculatorService: mockNumerologyDigitCalculatorService
+        );
+
+        cut.MarkupMatches(string.Empty);
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, "a2b8"));
+
+        cut.WaitForAssertion(() => Assert.Equal("1", cut.FindComponent<CalculationResult>().Instance.Text));
+        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindComponent<CalculationSteps>().Instance.Steps?.Count));
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, "2"));
+
+        cut.WaitForAssertion(() => Assert.Equal("2", cut.FindComponent<CalculationResult>().Instance.Text));
+        cut.WaitForAssertion(() => Assert.Empty(cut.FindComponents<CalculationSteps>()));
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, null));
+
+        cut.MarkupMatches(string.Empty);
+
+        mockNumerologyUiService
+            .InputDelay(Arg.Any<CancellationToken>())
+            .Returns(x => { throw new Exception(); });
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, "2"));
+
+        cut.MarkupMatches(string.Empty);
+    }
+}

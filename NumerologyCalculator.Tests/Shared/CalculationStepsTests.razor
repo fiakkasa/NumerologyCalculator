@@ -61,7 +61,7 @@
     public void CalculationSteps_Initial_Render_With_Empty_Steps_Renders_Correctly()
     {
         AddServices();
-        var collection = new List<CalculationStep>();
+        var collection = new List<CalculationStepModel>();
         Render(@<CalculationSteps Steps="collection" />).MarkupMatches(string.Empty);
     }
 
@@ -76,7 +76,7 @@
     public void CalculationSteps_Initial_Render_With_Non_Link_Steps_Renders_Correctly()
     {
         AddServices(sum: "4");
-        var collection = new List<CalculationStep>
+        var collection = new List<CalculationStepModel>
         {
             new("1 + 1 + 1 + 1", "4", 1, "1111")
         };
@@ -95,7 +95,7 @@
     {
         AddServices(sum: "4");
         var cut = RenderComponent<CalculationSteps>(p => 
-            p.Add(ps => ps.Steps, new List<CalculationStep>
+            p.Add(ps => ps.Steps, new List<CalculationStepModel>
             {
                 new("1 + 1 + 1 + 1", "4", 1, "1111")
             })
@@ -118,7 +118,7 @@
     {
         AddServices(sum: "4");
         var cut = RenderComponent<CalculationSteps>(p => 
-            p.Add(ps => ps.Steps, new List<CalculationStep>
+            p.Add(ps => ps.Steps, new List<CalculationStepModel>
             {
                 new("1 + 1 + 1 + 1", "4", 1, "1111")
             })
@@ -131,7 +131,7 @@
         Assert.Empty(cut.FindAll("a.nc-equation"));
         Assert.Empty(cut.FindAll("a.nc-sum"));
 
-        cut.SetParametersAndRender(p => p.Add(ps => ps.Steps, new List<CalculationStep>()));
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Steps, new List<CalculationStepModel>()));
 
         cut.MarkupMatches(string.Empty);
     }
@@ -140,7 +140,7 @@
     public void CalculationSteps_Initial_Render_With_Link_Steps_Renders_Correctly()
     {
         AddServices(true, "111", "3");
-        var collection = new List<CalculationStep>
+        var collection = new List<CalculationStepModel>
         {
             new("1 + 1 + 1", "3", 1, "111")
         };

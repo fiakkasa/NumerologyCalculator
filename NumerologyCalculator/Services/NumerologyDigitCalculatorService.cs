@@ -11,11 +11,11 @@ public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorServic
     public NumerologyDigitCalculatorService(INumerologyUiService numerologyUiService) =>
         _numerologyUiService = numerologyUiService;
 
-    public async Task<CalculationResult> Calculate(string? text, CancellationToken cancellationToken = default) =>
-        await Task.Run<CalculationResult>(() =>
+    public async Task<CalculationResultModel> Calculate(string? text, CancellationToken cancellationToken = default) =>
+        await Task.Run<CalculationResultModel>(() =>
             {
                 if (text is not { Length: > 0 })
-                    return new(Result: string.Empty, Steps: Enumerable.Empty<CalculationStep>());
+                    return new(Result: string.Empty, Steps: Enumerable.Empty<CalculationStepModel>());
 
                 var workingCollection =
                     text.Where(x => char.IsDigit(x))
@@ -23,10 +23,10 @@ public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorServic
                         .ToList();
 
                 if (workingCollection.Count == 0)
-                    return new(Result: string.Empty, Steps: Enumerable.Empty<CalculationStep>());
+                    return new(Result: string.Empty, Steps: Enumerable.Empty<CalculationStepModel>());
 
                 string result;
-                var steps = new List<CalculationStep>
+                var steps = new List<CalculationStepModel>
                 {
                     new(
                         Equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection),

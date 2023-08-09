@@ -46,7 +46,7 @@
         Assert.Null(searchInput.Instance.Text);
         Assert.Null(letterAdder.Instance.Text);
         Assert.Single(digitAdders.Where(x => x.Instance.Text == null));
-        Assert.Empty(cut.FindComponents<NumerologyCalculator.Shared.CalculationResult>());
+        Assert.Empty(cut.FindComponents<CalculationResult>());
 
         cut.WaitForAssertion(() => Assert.Equal(2, digitAdders.Where(x => x.Instance.Text is not { Length: > 0 }).Count()));
 
@@ -55,7 +55,7 @@
         Assert.Equal(string.Empty, searchInput.Instance.Text);
         Assert.Equal(string.Empty, letterAdder.Instance.Text);
         Assert.Equal(2, digitAdders.Where(x => x.Instance.Text == string.Empty).Count());
-        Assert.Empty(cut.FindComponents<NumerologyCalculator.Shared.CalculationResult>());
+        Assert.Empty(cut.FindComponents<CalculationResult>());
         
         await cut.Find("input.nc-search-input").InputAsync(new ChangeEventArgs { Value = "A 1" });
 
@@ -64,7 +64,7 @@
         Assert.Single(digitAdders.Where(x => x.Instance.Text == "A 1"));
 
         cut.WaitForAssertion(() => Assert.Single(digitAdders.Where(x => x.Instance.Text == "11")));
-        cut.WaitForAssertion(() => Assert.Equal(3, cut.FindComponents<NumerologyCalculator.Shared.CalculationResult>().Count));
+        cut.WaitForAssertion(() => Assert.Equal(3, cut.FindComponents<CalculationResult>().Count));
 
         cut.SetParametersAndRender(p => p.Add(ps => ps.Text, "  * Hello ^ World $ 20230101 ! "));
 
@@ -73,7 +73,7 @@
         Assert.Single(digitAdders.Where(x => x.Instance.Text == "  * Hello ^ World $ 20230101 ! "));
 
         cut.WaitForAssertion(() => Assert.Single(digitAdders.Where(x => x.Instance.Text == "97")));
-        cut.WaitForAssertion(() => Assert.Single(cut.FindComponents<NumerologyCalculator.Shared.CalculationResult>().Where(x => x.Instance.Text == "9")));
-        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindComponents<NumerologyCalculator.Shared.CalculationResult>().Where(x => x.Instance.Text == "7").Count()));
+        cut.WaitForAssertion(() => Assert.Single(cut.FindComponents<CalculationResult>().Where(x => x.Instance.Text == "9")));
+        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindComponents<CalculationResult>().Where(x => x.Instance.Text == "7").Count()));
     }
 }
