@@ -6,31 +6,30 @@ namespace NumerologyCalculator.Tests.Services;
 
 public class NumerologyLetterCalculatorServiceTests
 {
-    private readonly Mock<INumerologyUiService> _mockNumerologyUiService;
+    private readonly INumerologyUiService _mockNumerologyUiService;
     private readonly NumerologyLetterCalculatorService _numerologyLetterCalculatorService;
 
     public NumerologyLetterCalculatorServiceTests()
     {
-        _mockNumerologyUiService = new Mock<INumerologyUiService>();
+        _mockNumerologyUiService = Substitute.For<INumerologyUiService>();
 
         _mockNumerologyUiService
-            .Setup(m => m.ComposeCalculatorEntryEquation(It.IsAny<List<string>>()))
+            .ComposeCalculatorEntryEquation(Arg.Any<IEnumerable<string>>())
             .Returns("1 + 2 + 3");
 
         _mockNumerologyUiService
-            .Setup(m => m.ComposeCalculatorEntryEquation(It.IsAny<List<int>>()))
+            .ComposeCalculatorEntryEquation(Arg.Any<IEnumerable<int>>())
             .Returns("1 + 2");
 
         _mockNumerologyUiService
-            .SetupSequence(m => m.ComposeCalculatorEntrySequence(It.IsAny<List<int>>()))
-            .Returns("123")
-            .Returns("12");
+            .ComposeCalculatorEntrySequence(Arg.Any<IEnumerable<int>>())
+            .Returns("123", "12");
 
         _mockNumerologyUiService
-            .Setup(m => m.ComposeCalculatorEquationCombinedItem(It.IsAny<string>(), It.IsAny<string>()))
+            .ComposeCalculatorEquationCombinedItem(Arg.Any<string>(), Arg.Any<string>())
             .Returns("(A: 1)");
 
-        _numerologyLetterCalculatorService = new(_mockNumerologyUiService.Object);
+        _numerologyLetterCalculatorService = new(_mockNumerologyUiService);
     }
 
     [Fact]

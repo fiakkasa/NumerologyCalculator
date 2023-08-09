@@ -8,34 +8,46 @@
 {
     private IServiceCollection AddServices(bool validUrls = false, string sequence = "", string sum = "")
     {
-        var mockService = new Mock<INumerologyLinksService>();
+        var mockService = Substitute.For<INumerologyLinksService>();
 
         if (validUrls)
         {
             mockService
-                .Setup(m => m.IsNumerologyLinkEligible(sequence, out sequence))
-                .Returns(true);
+                .IsNumerologyLinkEligible(Arg.Is<string?>(x => x == sequence), out Arg.Any<string>())
+                .Returns(x =>
+                {
+                    x[1] = sequence;
+                    return true;
+                });
 
             mockService
-                .Setup(m => m.IsNumerologyLinkEligible(sum, out sum))
-                .Returns(true);
+                .IsNumerologyLinkEligible(Arg.Is<string?>(x => x == sum), out Arg.Any<string>())
+                .Returns(x =>
+                {
+                    x[1] = sum;
+                    return true;
+                });
 
             mockService
-                .Setup(m => m.GetNumerologyUrl(sequence))
+                .GetNumerologyUrl(Arg.Is<string?>(x => x == sequence))
                 .Returns("/" + sequence);
 
             mockService
-                .Setup(m => m.GetNumerologyUrl(sum))
+                .GetNumerologyUrl(Arg.Is<string?>(x => x == sum))
                 .Returns("/" + sum);
         }
         else
         {
             mockService
-                .Setup(m => m.IsNumerologyLinkEligible(It.IsAny<string?>(), out sum))
-                .Returns(false);
+                .IsNumerologyLinkEligible(Arg.Any<string?>(), out Arg.Any<string>())
+                .Returns(x =>
+                {
+                    x[1] = sum;
+                    return false;
+                });
         }
 
-        return Services.AddSingleton(mockService.Object);
+        return Services.AddSingleton(mockService);
     }
 
     [Fact]

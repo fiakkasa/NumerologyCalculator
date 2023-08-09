@@ -6,22 +6,22 @@ namespace NumerologyCalculator.Tests.Services;
 
 public class NumerologyDigitCalculatorServiceTests
 {
-    private readonly Mock<INumerologyUiService> _mockNumerologyUiService;
+    private readonly INumerologyUiService _mockNumerologyUiService;
     private readonly NumerologyDigitCalculatorService _numerologyDigitCalculatorService;
 
     public NumerologyDigitCalculatorServiceTests()
     {
-        _mockNumerologyUiService = new Mock<INumerologyUiService>();
+        _mockNumerologyUiService = Substitute.For<INumerologyUiService>();
 
         _mockNumerologyUiService
-            .Setup(m => m.ComposeCalculatorEntryEquation(It.IsAny<List<int>>()))
+            .ComposeCalculatorEntryEquation(Arg.Any<IEnumerable<int>>())
             .Returns("1 + 2 + 3");
 
         _mockNumerologyUiService
-            .Setup(m => m.ComposeCalculatorEntrySequence(It.IsAny<List<int>>()))
+            .ComposeCalculatorEntrySequence(Arg.Any<IEnumerable<int>>())
             .Returns("123");
 
-        _numerologyDigitCalculatorService = new(_mockNumerologyUiService.Object);
+        _numerologyDigitCalculatorService = new(_mockNumerologyUiService);
     }
 
     [Fact]

@@ -7,26 +7,34 @@
 {
     private IServiceCollection AddServices(bool validUrls = false, string result = "")
     {
-        var mockService = new Mock<INumerologyLinksService>();
+        var mockService = Substitute.For<INumerologyLinksService>();
 
         if (validUrls)
         {
             mockService
-                .Setup(m => m.IsNumerologyLinkEligible(result, out result))
-                .Returns(true);
+                .IsNumerologyLinkEligible(result, out Arg.Any<string>())
+                .Returns(x =>
+                {
+                    x[1] = result;
+                    return true;
+                });
 
             mockService
-                .Setup(m => m.GetNumerologyUrl(result))
+                .GetNumerologyUrl(result)
                 .Returns("/" + result);
         }
         else
         {
             mockService
-                .Setup(m => m.IsNumerologyLinkEligible(It.IsAny<string?>(), out result))
-                .Returns(false);
+                .IsNumerologyLinkEligible(Arg.Any<string?>(), out Arg.Any<string>())
+                .Returns(x =>
+                {
+                    x[1] = result;
+                    return false;
+                });
         }
 
-        return Services.AddSingleton(mockService.Object);
+        return Services.AddSingleton(mockService);
     }
 
     [Fact]
