@@ -52,7 +52,8 @@
 
     private void OnTextChange(string value)
     {
-        Text = value;
-        navigationManager.NavigateTo($"./{value}");
+        Text = value.Replace(".", " ");
+        
+        navigationManager.NavigateTo($"./{Uri.EscapeDataString(Text)}");
     }
 }
