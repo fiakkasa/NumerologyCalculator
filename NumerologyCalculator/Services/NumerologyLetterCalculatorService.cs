@@ -1,11 +1,13 @@
 ﻿using NumerologyCalculator.Models;
 using NumerologyCalculator.Interfaces;
+using NumerologyCalculator.Extensions;
+using System.Collections.Generic;
+using System;
 
 namespace NumerologyCalculator.Services;
 
 public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorService
 {
-    private const int _charCodeDelta = 48;
     private readonly INumerologyUiService _numerologyUiService;
     private readonly Dictionary<char, int> _map = new()
     {
@@ -48,48 +50,79 @@ public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorServ
     public NumerologyLetterCalculatorService(INumerologyUiService numerologyUiService) =>
         _numerologyUiService = numerologyUiService;
 
+    private (char[] letters, int[] numbers, string[] composed) ToCollectionFromTextSequence(string text)
+    {
+        var count = 0;
+
+        for (var i = 0; i < text.Length; i++)
+        {
+            var letter = char.ToUpper(text[i]);
+
+            if (char.IsAsciiLetter(letter) && _map.ContainsKey(letter)) count++;
+        }
+
+        if (count == 0) return (letters: Array.Empty<char>(), numbers: Array.Empty<int>(), composed: Array.Empty<string>());
+
+        var letters = new char[count];
+        var numbers = new int[count];
+        var composed = new string[count];
+
+        var index = 0;
+
+        for (var i = 0; i < text.Length; i++)
+        {
+            var letter = char.ToUpper(text[i]);
+
+            if (char.IsAsciiLetter(letter) && _map.ContainsKey(letter))
+            {
+                letters[index] = letter;
+                numbers[index] = _map[letter];
+                composed[index] = _numerologyUiService.ComposeCalculatorEquationCombinedItem(letter, _map[letter]);
+
+                index++;
+            }
+        }
+
+        return (letters, numbers, composed);
+    }
+
     public async Task<CalculationResultModel> Calculate(string? text, CancellationToken cancellationToken = default) =>
         await Task.Run<CalculationResultModel>(() =>
             {
                 if (text is not { Length: > 0 })
-                    return new(Result: string.Empty, Steps: Enumerable.Empty<CalculationStepModel>());
+                    return new(Result: string.Empty, Steps: Array.Empty<CalculationStepModel>());
 
-                var workingCollection =
-                    text.ToUpper()
-                        .Where(x => char.IsAsciiLetter(x) && _map.ContainsKey(x))
-                        .Select(letter => (letter, number: _map[letter], composed: _numerologyUiService.ComposeCalculatorEquationCombinedItem(letter, _map[letter])))
-                        .ToList();
+                var (letters, numbers, composed) = ToCollectionFromTextSequence(text);
 
-                if (workingCollection.Count == 0)
-                    return new(Result: string.Empty, Steps: Enumerable.Empty<CalculationStepModel>());
+                if (letters.Length == 0)
+                    return new(Result: string.Empty, Steps: Array.Empty<CalculationStepModel>());
 
                 string result;
                 var steps = new List<CalculationStepModel>
                 {
                     new(
-                        Equation: _numerologyUiService.ComposeCalculatorEntryEquation(workingCollection.Select(x => x.composed).ToList()),
-                        Sum: result = workingCollection.Select(x => x.number).Sum().ToString(),
-                        NumberOfCharacters: workingCollection.Count,
-                        Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(workingCollection.Select(x => x.number).ToList())
+                        Equation: _numerologyUiService.ComposeCalculatorEntryEquation(composed),
+                        Sum: result = numbers.ToSumString(),
+                        NumberOfCharacters: numbers.Length,
+                        Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(letters)
                     )
                 };
-                List<int> numberCollection;
 
                 while (result.Length > 1)
                 {
-                    numberCollection = result.Select(x => x - _charCodeDelta).ToList();
+                    numbers = result.ToCollectionFromNumericSequence();
 
                     steps.Add(
                         new(
-                            Equation: _numerologyUiService.ComposeCalculatorEntryEquation(numberCollection),
-                            Sum: result = numberCollection.Sum().ToString(),
-                            NumberOfCharacters: numberCollection.Count,
-                            Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(numberCollection)
+                            Equation: _numerologyUiService.ComposeCalculatorEntryEquation(numbers),
+                            Sum: result = numbers.ToSumString(),
+                            NumberOfCharacters: numbers.Length,
+                            Sequence: _numerologyUiService.ComposeCalculatorEntrySequence(numbers)
                         )
                     );
                 }
 
-                return new(Result: result, Steps: steps);
+                return new(Result: result, Steps: steps.ToArray());
             },
             cancellationToken
         );

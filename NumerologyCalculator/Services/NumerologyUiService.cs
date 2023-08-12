@@ -10,10 +10,10 @@ public class NumerologyUiService : INumerologyUiService
     public NumerologyUiService(NumerologyUiConfig config) =>
         _config = config;
 
-    public string ComposeCalculatorEntryEquation<T>(IEnumerable<T> collection) =>
+    public string ComposeCalculatorEntryEquation<T>(T[] collection) =>
         string.Join(_config.CalculatorEquationSeparator, collection);
 
-    public string ComposeCalculatorEntrySequence<T>(IEnumerable<T> collection) =>
+    public string ComposeCalculatorEntrySequence<T>(T[] collection) =>
         string.Join(string.Empty, collection);
 
     public string ComposeCalculatorEquationCombinedItem<TLeft, TRight>(TLeft left, TRight right) =>

@@ -2,9 +2,9 @@ namespace NumerologyCalculator.Interfaces;
 
 public interface INumerologyUiService
 {
-    string ComposeCalculatorEntryEquation<T>(IEnumerable<T> collection);
+    string ComposeCalculatorEntryEquation<T>(T[] collection);
 
-    string ComposeCalculatorEntrySequence<T>(IEnumerable<T> collection);
+    string ComposeCalculatorEntrySequence<T>(T[] collection);
 
     string ComposeCalculatorEquationCombinedItem<TLeft, TRight>(TLeft left, TRight right);
 

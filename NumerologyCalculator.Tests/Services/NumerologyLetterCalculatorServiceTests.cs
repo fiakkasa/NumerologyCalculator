@@ -14,15 +14,15 @@ public class NumerologyLetterCalculatorServiceTests
         _mockNumerologyUiService = Substitute.For<INumerologyUiService>();
 
         _mockNumerologyUiService
-            .ComposeCalculatorEntryEquation(Arg.Any<IEnumerable<string>>())
+            .ComposeCalculatorEntryEquation(Arg.Any<string[]>())
             .Returns("1 + 2 + 3");
 
         _mockNumerologyUiService
-            .ComposeCalculatorEntryEquation(Arg.Any<IEnumerable<int>>())
+            .ComposeCalculatorEntryEquation(Arg.Any<int[]>())
             .Returns("1 + 2");
 
         _mockNumerologyUiService
-            .ComposeCalculatorEntrySequence(Arg.Any<IEnumerable<int>>())
+            .ComposeCalculatorEntrySequence(Arg.Any<int[]>())
             .Returns("123", "12");
 
         _mockNumerologyUiService
@@ -92,7 +92,7 @@ public class NumerologyLetterCalculatorServiceTests
         var result = await _numerologyLetterCalculatorService.Calculate("ABCD");
 
         Assert.Equal("1", result.Result);
-        Assert.Equal(2, result.Steps.Count());
+        Assert.Equal(2, result.Steps.Length);
     }
 
     [Fact]
@@ -101,6 +101,6 @@ public class NumerologyLetterCalculatorServiceTests
         var result = await _numerologyLetterCalculatorService.Calculate("  A  ! 2 B3 C4  - D");
 
         Assert.Equal("1", result.Result);
-        Assert.Equal(2, result.Steps.Count());
+        Assert.Equal(2, result.Steps.Length);
     }
 }

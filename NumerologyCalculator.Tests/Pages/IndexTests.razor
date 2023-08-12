@@ -43,18 +43,18 @@
         var letterAdder = cut.FindComponent<LetterAdder>();
         var digitAdders = cut.FindComponents<DigitAdder>();
  
-        Assert.Null(searchInput.Instance.Text);
-        Assert.Null(letterAdder.Instance.Text);
-        Assert.Single(digitAdders.Where(x => x.Instance.Text == null));
+        Assert.Equal(string.Empty, searchInput.Instance.Text);
+        Assert.Equal(string.Empty, letterAdder.Instance.Text);
+        Assert.Equal(2, digitAdders.Count(x => x.Instance.Text == string.Empty));
         Assert.Empty(cut.FindComponents<CalculationResult>());
 
-        cut.WaitForAssertion(() => Assert.Equal(2, digitAdders.Where(x => x.Instance.Text is not { Length: > 0 }).Count()));
+        cut.WaitForAssertion(() => Assert.Equal(2, digitAdders.Count(x => x.Instance.Text is not { Length: > 0 })));
 
         cut.SetParametersAndRender(p => p.Add(ps => ps.Text, string.Empty));
 
         Assert.Equal(string.Empty, searchInput.Instance.Text);
         Assert.Equal(string.Empty, letterAdder.Instance.Text);
-        Assert.Equal(2, digitAdders.Where(x => x.Instance.Text == string.Empty).Count());
+        Assert.Equal(2, digitAdders.Count(x => x.Instance.Text == string.Empty));
         Assert.Empty(cut.FindComponents<CalculationResult>());
         
         await cut.Find("input.nc-search-input").InputAsync(new ChangeEventArgs { Value = "A 1" });
@@ -74,6 +74,6 @@
 
         cut.WaitForAssertion(() => Assert.Single(digitAdders.Where(x => x.Instance.Text == "97")));
         cut.WaitForAssertion(() => Assert.Single(cut.FindComponents<CalculationResult>().Where(x => x.Instance.Text == "9")));
-        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindComponents<CalculationResult>().Where(x => x.Instance.Text == "7").Count()));
+        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindComponents<CalculationResult>().Count(x => x.Instance.Text == "7")));
     }
 }

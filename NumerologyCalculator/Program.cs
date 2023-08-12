@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using NumerologyCalculator;
 using NumerologyCalculator.Interfaces;
 using NumerologyCalculator.Models;

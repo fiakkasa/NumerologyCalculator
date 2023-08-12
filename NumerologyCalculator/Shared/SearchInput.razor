@@ -51,7 +51,7 @@
         await _textRef.FocusAsync();
     }
 
-    private async Task OnInput(string value)
+    private async Task OnInput(string? value)
     {
         Text = value;
         await TextChanged.InvokeAsync(value);

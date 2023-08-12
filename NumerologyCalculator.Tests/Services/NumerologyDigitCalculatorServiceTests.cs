@@ -14,11 +14,11 @@ public class NumerologyDigitCalculatorServiceTests
         _mockNumerologyUiService = Substitute.For<INumerologyUiService>();
 
         _mockNumerologyUiService
-            .ComposeCalculatorEntryEquation(Arg.Any<IEnumerable<int>>())
+            .ComposeCalculatorEntryEquation(Arg.Any<int[]>())
             .Returns("1 + 2 + 3");
 
         _mockNumerologyUiService
-            .ComposeCalculatorEntrySequence(Arg.Any<IEnumerable<int>>())
+            .ComposeCalculatorEntrySequence(Arg.Any<int[]>())
             .Returns("123");
 
         _numerologyDigitCalculatorService = new(_mockNumerologyUiService);
@@ -84,7 +84,7 @@ public class NumerologyDigitCalculatorServiceTests
         var result = await _numerologyDigitCalculatorService.Calculate("1234");
 
         Assert.Equal("1", result.Result);
-        Assert.Equal(2, result.Steps.Count());
+        Assert.Equal(2, result.Steps.Length);
     }
 
     [Fact]
@@ -93,6 +93,6 @@ public class NumerologyDigitCalculatorServiceTests
         var result = await _numerologyDigitCalculatorService.Calculate("  1  ! 2 a3 C4  -");
 
         Assert.Equal("1", result.Result);
-        Assert.Equal(2, result.Steps.Count());
+        Assert.Equal(2, result.Steps.Length);
     }
 }
