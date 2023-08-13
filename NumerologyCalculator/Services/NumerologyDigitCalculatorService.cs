@@ -13,7 +13,7 @@ public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorServic
     public NumerologyDigitCalculatorService(INumerologyUiService numerologyUiService) =>
         _numerologyUiService = numerologyUiService;
 
-    private static int[] ToCollectionFromTextSequence(string text)
+    private static int[] ToFilteredDigitCollection(string text)
     {
         var count = 0;
 
@@ -32,7 +32,7 @@ public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorServic
         {
             if (char.IsDigit(text[i]))
             {
-                result[index] = text[i].CharToInt();
+                result[index] = text[i].ToDeltaInt();
                 index++;
             }
         }
@@ -46,7 +46,7 @@ public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorServic
                 if (text is not { Length: > 0 })
                     return new(Result: string.Empty, Steps: Array.Empty<CalculationStepModel>());
 
-                var numbers = ToCollectionFromTextSequence(text);
+                var numbers = ToFilteredDigitCollection(text);
 
                 if (numbers.Length == 0)
                     return new(Result: string.Empty, Steps: Array.Empty<CalculationStepModel>());
@@ -64,7 +64,7 @@ public class NumerologyDigitCalculatorService : INumerologyDigitCalculatorServic
 
                 while (result.Length > 1)
                 {
-                    numbers = result.ToCollectionFromNumericSequence();
+                    numbers = result.ToDeltaIntCollectionSequence();
 
                     steps.Add(
                         new(

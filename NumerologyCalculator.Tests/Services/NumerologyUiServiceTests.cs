@@ -9,15 +9,15 @@ public class NumerologyUiServiceTests
     public NumerologyUiServiceTests() => _numerologyUiService = new(new(MaxInputChars: 5));
 
     [Fact]
-    public void NumerologyUiServiceTests_ComposeCalculatorEntryEquation_String_With_Collection() =>
+    public void NumerologyUiService_ComposeCalculatorEntryEquation_String_With_Collection() =>
         Assert.Equal("1 + 2", _numerologyUiService.ComposeCalculatorEntryEquation(new[] { 1, 2 }));
 
     [Fact]
-    public void NumerologyUiServiceTests_ComposeCalculatorEntrySequence_String_With_Collection() =>
+    public void NumerologyUiService_ComposeCalculatorEntrySequence_String_With_Collection() =>
         Assert.Equal("12", _numerologyUiService.ComposeCalculatorEntrySequence(new[] { 1, 2 }));
 
     [Fact]
-    public void NumerologyUiServiceTests_ComposeCalculatorEquationCombinedItem_String_With_Inputs() =>
+    public void NumerologyUiService_ComposeCalculatorEquationCombinedItem_String_With_Inputs() =>
         Assert.Equal("(A: 2)", _numerologyUiService.ComposeCalculatorEquationCombinedItem("A", "2"));
 
     [Fact]

@@ -1,17 +1,21 @@
-﻿namespace NumerologyCalculator.Extensions;
+﻿using System;
+
+namespace NumerologyCalculator.Extensions;
 
 public static class Extensions
 {
     private const int _charCodeDelta = 48;
 
-    public static int CharToInt(this char c) => c - _charCodeDelta;
+    public static int ToDeltaInt(this char c) => c - _charCodeDelta;
 
-    public static int[] ToCollectionFromNumericSequence(this string text)
+    public static int[] ToDeltaIntCollectionSequence(this string text)
     {
+        if (text.Length == 0) return Array.Empty<int>();
+
         var result = new int[text.Length];
 
         for (var i = 0; i < text.Length; i++)
-            result[i] = text[i].CharToInt();
+            result[i] = text[i].ToDeltaInt();
 
         return result;
     }

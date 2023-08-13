@@ -50,7 +50,7 @@ public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorServ
     public NumerologyLetterCalculatorService(INumerologyUiService numerologyUiService) =>
         _numerologyUiService = numerologyUiService;
 
-    private (char[] letters, int[] numbers, string[] composed) ToCollectionFromTextSequence(string text)
+    private (char[] letters, int[] numbers, string[] composed) ToFilteredLetterDerivedCollections(string text)
     {
         var count = 0;
 
@@ -92,7 +92,7 @@ public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorServ
                 if (text is not { Length: > 0 })
                     return new(Result: string.Empty, Steps: Array.Empty<CalculationStepModel>());
 
-                var (letters, numbers, composed) = ToCollectionFromTextSequence(text);
+                var (letters, numbers, composed) = ToFilteredLetterDerivedCollections(text);
 
                 if (letters.Length == 0)
                     return new(Result: string.Empty, Steps: Array.Empty<CalculationStepModel>());
@@ -110,7 +110,7 @@ public class NumerologyLetterCalculatorService : INumerologyLetterCalculatorServ
 
                 while (result.Length > 1)
                 {
-                    numbers = result.ToCollectionFromNumericSequence();
+                    numbers = result.ToDeltaIntCollectionSequence();
 
                     steps.Add(
                         new(
