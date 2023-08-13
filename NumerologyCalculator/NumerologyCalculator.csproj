@@ -12,12 +12,6 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.10" PrivateAssets="all" />
 	</ItemGroup>
-	<ItemGroup>
-	  <None Remove="Extensions\" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Extensions\" />
-	</ItemGroup>
 	<PropertyGroup>
 		<BlazorEnableTimeZoneSupport>false</BlazorEnableTimeZoneSupport>
 		<BlazorWebAssemblyPreserveCollationData>false</BlazorWebAssemblyPreserveCollationData>
