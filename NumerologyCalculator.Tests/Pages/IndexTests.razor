@@ -7,7 +7,7 @@
 @inherits TestContext
 
 @code
-{ 
+{
     [Fact]
     public void Index_With_Stubs_And_Text_Renders_Correctly()
     {
@@ -16,7 +16,7 @@
         ComponentFactories.AddStub<LetterAdder>();
 
         var cut = RenderComponent<NumerologyCalculator.Pages.Index>(p => p.Add(ps => ps.Text, "Hello"));
-            
+
         Assert.Single(cut.FindAll("div.nc-input-container"));
         Assert.Equal(3, cut.FindAll("div.nc-hide-when-empty").Count);
     }
@@ -42,7 +42,7 @@
         var searchInput = cut.FindComponent<SearchInput>();
         var letterAdder = cut.FindComponent<LetterAdder>();
         var digitAdders = cut.FindComponents<DigitAdder>();
- 
+
         Assert.Equal(string.Empty, searchInput.Instance.Text);
         Assert.Equal(string.Empty, letterAdder.Instance.Text);
         Assert.Equal(2, digitAdders.Count(x => x.Instance.Text == string.Empty));
@@ -56,7 +56,7 @@
         Assert.Equal(string.Empty, letterAdder.Instance.Text);
         Assert.Equal(2, digitAdders.Count(x => x.Instance.Text == string.Empty));
         Assert.Empty(cut.FindComponents<CalculationResult>());
-        
+
         await cut.Find("input.nc-search-input").InputAsync(new ChangeEventArgs { Value = "A 1" });
 
         Assert.Equal("A 1", searchInput.Instance.Text);
@@ -75,5 +75,14 @@
         cut.WaitForAssertion(() => Assert.Single(digitAdders.Where(x => x.Instance.Text == "97")));
         cut.WaitForAssertion(() => Assert.Single(cut.FindComponents<CalculationResult>().Where(x => x.Instance.Text == "9")));
         cut.WaitForAssertion(() => Assert.Equal(2, cut.FindComponents<CalculationResult>().Count(x => x.Instance.Text == "7")));
+
+        cut.SetParametersAndRender(p => p.Add(ps => ps.Text, "0a"));
+
+        Assert.Equal("0a", searchInput.Instance.Text);
+        Assert.Equal("0a", letterAdder.Instance.Text);
+        Assert.Single(digitAdders.Where(x => x.Instance.Text == "0a"));
+
+        cut.WaitForAssertion(() => Assert.Single(cut.FindComponents<CalculationResult>().Where(x => x.Instance.Text == "1")));
+        cut.WaitForAssertion(() => Assert.Single(cut.FindComponents<CalculationResult>().Where(x => x.Instance.Text == "0")));
     }
 }

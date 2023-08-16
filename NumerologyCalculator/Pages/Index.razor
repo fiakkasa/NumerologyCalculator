@@ -44,16 +44,16 @@
 
     private bool Loading => _digitAdderBusy || _letterAdderBusy || _combinedAdderBusy;
 
-    private string CombinedResult => (_digitAdderResult.Length > 0 && _letterAdderResult.Length > 0) switch
+    private string CombinedResult => (da: _digitAdderResult, la: _letterAdderResult) switch
     {
-        true => _digitAdderResult + _letterAdderResult,
+        { da: { Length: > 0 } and not "0", la.Length: > 0 } => _digitAdderResult + _letterAdderResult,
         _ => string.Empty
     };
 
     private void OnTextChange(string value)
     {
         Text = value.Replace(".", " ");
-        
+
         navigationManager.NavigateTo($"./{Uri.EscapeDataString(Text)}");
     }
 }
